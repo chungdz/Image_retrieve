@@ -7,7 +7,8 @@ from torchvision.models.vgg import vgg11
 class MultiVgg(nn.Module):
     def __init__(self, cfg):
         super(MultiVgg, self).__init__()
-        self.vgg = vgg11(pretrained=False, progress=True, num_classes=cfg.hidden_size, dropout=cfg.dropout)
+        # self.vgg = VGG(make_layers(cfgs["A"], batch_norm=False), num_classes=cfg.hidden_size, )
+        self.vgg = vgg11(pretrained=False, progress=True, num_classes=cfg.hidden_size)
         self.w = cfg.w
         self.h = cfg.h
         self.neg_count = cfg.neg_count
