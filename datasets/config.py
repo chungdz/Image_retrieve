@@ -8,6 +8,7 @@ class ModelConfig():
         self.h = 224
         self.w = 224
         self.neg_count = 4
-        self.hidden_size = 100
+        self.hidden_size = 1000
         self.dropout = 0.5
+
 

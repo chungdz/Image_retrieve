@@ -5,13 +5,18 @@ import pandas as pd
 import numpy as np
  
 class FNNData(Dataset):
-    def __init__(self, cfg, dataset):
+    def __init__(self, cfg, isValidation=False):
         self.cfg = cfg
-        self.pic_matrix = cfg.pic_matrix
-        self.dataset = np.load(dataset)
+        self.pic_matrix = torch.LongTensor(cfg.pic_matrix)
+        self.dataset = torch.LongTensor(cfg.dataset)
+        self.isValidation = isValidation
 
     def __getitem__(self, index):
-        return torch.FloatTensor(self.pic_matrix[self.dataset[index]])
+        if self.isValidation:
+            img = self.pic_matrix[self.dataset[index][0]].reshape(-1)
+            targets = self.dataset[index][1:]
+            return torch.cat([img, targets], dim=-1)
+        return torch.LongTensor(self.pic_matrix[self.dataset[index]])
  
     def __len__(self):
         return self.dataset.shape[0]
