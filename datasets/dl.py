@@ -7,7 +7,7 @@ import numpy as np
 class FNNData(Dataset):
     def __init__(self, cfg, isValidation=False):
         self.cfg = cfg
-        self.pic_matrix = torch.LongTensor(cfg.pic_matrix)
+        self.pic_matrix = torch.ByteTensor(cfg.pic_matrix)
         self.dataset = torch.LongTensor(cfg.dataset)
         self.isValidation = isValidation
 
