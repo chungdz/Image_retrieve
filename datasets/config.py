@@ -11,4 +11,12 @@ class ModelConfig():
         self.hidden_size = 1000
         self.dropout = 0.5
 
+class GeMConfig():
+    def __init__(self):
+
+        self.neg_count = 4
+        self.hidden_size = 512
+        self.arch = '18'
+
+
 

@@ -7,7 +7,7 @@ import numpy as np
 class FNNData(Dataset):
     def __init__(self, cfg, isValidation=False):
         self.cfg = cfg
-        self.pic_matrix = torch.ByteTensor(cfg.pic_matrix)
+        self.pic_matrix = torch.LongTensor(cfg.pic_matrix)
         self.dataset = torch.LongTensor(cfg.dataset)
         self.isValidation = isValidation
 
@@ -20,4 +20,26 @@ class FNNData(Dataset):
  
     def __len__(self):
         return self.dataset.shape[0]
+
+class GeMData(Dataset):
+    def __init__(self, cfg, isValid=False):
+        '''
+        change in matrix to matrix path when really do it
+        '''
+        self.cfg = cfg
+        self.pic_matrix = torch.ByteTensor(cfg.pic_matrix)
+        self.dataset = torch.LongTensor(cfg.dataset)
+        self.isValid = isValid
+
+    def __getitem__(self, index):
+        if self.isValid:
+            img = self.pic_matrix[self.dataset[index][:2]].reshape(-1)
+            label = self.dataset[index][2].reshape(-1)
+            return torch.cat([img, label], dim=-1)
+        
+        return self.pic_matrix[self.dataset[index]]
+ 
+    def __len__(self):
+        return self.dataset.shape[0]
+
 
