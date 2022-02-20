@@ -17,66 +17,6 @@ def init():
 
     return path, label_path
 
-
-
-
-def changeImageShape(path):
-    image = None
-    image  = cv2.imread(path)    
-    image1 = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    if image1.shape[1] < image1.shape[0]:
-        scale_percent = image1.shape[0]/224
-        width = round(image1.shape[1] / scale_percent)
-        height = round(image1.shape[0] / scale_percent)
-        
-    else:
-        scale_percent = image1.shape[1]/224
-        width = round(image1.shape[1] / scale_percent)
-        height = round(image1.shape[0] / scale_percent)
-          
-        
-        
-
-    dim = (width, height)
-    resized = cv2.resize(image1, dim, interpolation = cv2.INTER_AREA)
-    
-    #create an empty array with size of 224*224*3:
-    resized_image = np.zeros((224,224,3),dtype=np.uint8)
-    
-    #Copy resized image into 300*300*3 matrix
-    if resized.shape[0]<224:
-        center_temp = (224 - resized.shape[0])//2
-        if resized.shape[0]%2:
-            resized_image[center_temp+1:224-center_temp, 0:224] = resized[0:resized.shape[0], 0:224]
-        else:
-            resized_image[center_temp:224-center_temp, 0:224] = resized[0:resized.shape[0], 0:224]
-        #Fill out blank part of image
-        gaussiand_image_top = cv2.GaussianBlur(resized[0:center_temp, 0:224],(7,7),1000)
-        gaussiand_image_bottom = cv2.GaussianBlur(resized[(resized.shape[0]-center_temp):resized.shape[0], 0:224],(7,7),1000)
-        resized_image[0:center_temp, 0:224] = gaussiand_image_top
-        resized_image[(224-center_temp):224, 0:224] = gaussiand_image_bottom
-    else:
-        center_temp = (224 - resized.shape[1])//2
-        if resized.shape[1]%2:
-             resized_image[0:224, center_temp+1:224-center_temp] = resized[0:224, 0:resized.shape[1]]
-        else:
-             resized_image[0:224, center_temp:224-center_temp] = resized[0:224, 0:resized.shape[1]]
-        #Fill out blank part of image
-        gaussiand_image_left = cv2.GaussianBlur(resized[0:224, 0:center_temp],(7,7),1000)
-        gaussiand_image_right = cv2.GaussianBlur(resized[0:224,(resized.shape[1]-center_temp):resized.shape[1]],(7,7),1000)
-        resized_image[0:224, 0:center_temp] = gaussiand_image_left
-        resized_image[0:224, (224-center_temp):224] = gaussiand_image_right
-    
-
-    return resized_image
-
-def Plot_image(images):
-    for i in range(len(images)):
-        plt.subplot(1, 10, i+1)
-        plt.imshow(np.reshape(images[i], (224,224,3)))
-    plt.show()
-
-
 #============================================================================#
 #GetImage(Path)
 #Input: the location of the image set: E.g: "F:/Image_data/data/image/"
@@ -166,11 +106,90 @@ def generateImageInfoFile(path, label_path):
 
 
 
+#============================================================================#
+#changeImageShape(path)
+#Input: the location of single image: E.g: "F:/Image_data/data/image/"
+#Output: Single image with shape of 224X224X3
+#
+# Image first reshape scale to longer side = 224
+# Full fill empty part with origin part og image after an gaussian filter
+#============================================================================#
+def changeImageShape(path):
+    image = None                #clear image variable in case memory use error from imread()
+    image  = cv2.imread(path)    
+    image1 = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) #convert BGR to RGB
+    if image1.shape[1] < image1.shape[0]:
+        scale_percent = image1.shape[0]/224
+        width = round(image1.shape[1] / scale_percent)
+        height = round(image1.shape[0] / scale_percent)
+        
+    else:
+        scale_percent = image1.shape[1]/224
+        width = round(image1.shape[1] / scale_percent)
+        height = round(image1.shape[0] / scale_percent)
 
+    dim = (width, height)
+    resized = cv2.resize(image1, dim, interpolation = cv2.INTER_AREA)
+    
+    #create an empty array with size of 224*224*3:
+    resized_image = np.zeros((224,224,3),dtype=np.uint8)
+    
+    #Copy resized image into 300*300*3 matrix
+    if resized.shape[0]<224:
+        center_temp = (224 - resized.shape[0])//2
+        if resized.shape[0]%2:
+            resized_image[center_temp+1:224-center_temp, 0:224] = resized[0:resized.shape[0], 0:224]
+        else:
+            resized_image[center_temp:224-center_temp, 0:224] = resized[0:resized.shape[0], 0:224]
+        #Fill out blank part of image
+        gaussiand_image_top = cv2.GaussianBlur(resized[0:center_temp, 0:224],(7,7),1000)
+        gaussiand_image_bottom = cv2.GaussianBlur(resized[(resized.shape[0]-center_temp):resized.shape[0], 0:224],(7,7),1000)
+        resized_image[0:center_temp, 0:224] = gaussiand_image_top
+        resized_image[(224-center_temp):224, 0:224] = gaussiand_image_bottom
+    else:
+        center_temp = (224 - resized.shape[1])//2
+        if resized.shape[1]%2:
+             resized_image[0:224, center_temp+1:224-center_temp] = resized[0:224, 0:resized.shape[1]]
+        else:
+             resized_image[0:224, center_temp:224-center_temp] = resized[0:224, 0:resized.shape[1]]
+        #Fill out blank part of image
+        gaussiand_image_left = cv2.GaussianBlur(resized[0:224, 0:center_temp],(7,7),1000)
+        gaussiand_image_right = cv2.GaussianBlur(resized[0:224,(resized.shape[1]-center_temp):resized.shape[1]],(7,7),1000)
+        resized_image[0:224, 0:center_temp] = gaussiand_image_left
+        resized_image[0:224, (224-center_temp):224] = gaussiand_image_right
+    
+    return resized_image
+
+
+
+#============================================================================#
+#Plot_image(images)
+#Input: image set of n
+#Output: Plot out all images from the input set
+#
+# For testing 
+#============================================================================#
+def Plot_image(images):
+    for i in range(len(images)):
+        plt.subplot(1, len(images), i+1)
+        plt.imshow(np.reshape(images[i], (224,224,3)))
+    plt.show()
+
+
+
+#============================================================================#
+#generateImageSet(dataframe, index, start, end)
+#Input: 
+#   dataframe: dataframe contain all information about each car
+#   index: start index 
+#   start: start image number from the dataframe
+#   end:   end image number from the dataframe
+#
+#Output: 
+#   imageset:   One big matrix contain all 3X224X224 images
+#   index_df:   dataframe contain image index and correspond car model info
+#============================================================================#
 def generateImageSet(dataframe, index, start, end):
-    
-    #generateImageSet(df_front_all)
-    
     image_set = []
     index_set = []
     model_set = []
@@ -179,7 +198,6 @@ def generateImageSet(dataframe, index, start, end):
     for image_num in range(start, end):
         #generate 10 sub image for one image
         resized_image = changeImageShape(dataframe["Path"].iloc[image_num])
-
         image_set.append(resized_image)
         index_set.append(index)
         model_set.append(dataframe["CarModel"].iloc[image_num])
@@ -193,14 +211,18 @@ def generateImageSet(dataframe, index, start, end):
     index_df = pd.DataFrame(data)
     return imageset, index_df
     
+#============================================================================#
 #Save Imageset and Index Dataframe:
+#============================================================================#
 def savetofile(imagepath, indexpath, imageset, indexset):
     
     np.save(imagepath, np.array(imageset, dtype = np.uint8))
     indexset.to_csv(indexpath, index = False)
 
     
-
+#============================================================================#
+#get a random index of a positive sample for trainning set and validation set 
+#============================================================================#
 def getrandom_pos(df, index):
     
     #get all index for this car model, random one != current one
@@ -214,7 +236,9 @@ def getrandom_pos(df, index):
     
     return result
 
-
+#============================================================================#
+#get a random index of a negative sample for trainning set and validation set 
+#============================================================================#
 def getrandom_neg(df, index):
     
     df_temp = df.loc[df['Index'] == index]
@@ -232,6 +256,9 @@ def getrandom_neg(df, index):
     return result
     
     
+#============================================================================#
+#generate train and validation sets
+#============================================================================#
 def generateTrainset(path):
     df = pd.read_csv(path)
 
@@ -250,12 +277,7 @@ def generateTrainset(path):
             templist.append(getrandom_pos(df, x))
             templist.append(getrandom_neg(df, x))
             validset.append(np.array(templist))
-
-
-
-
-
-
+    
     count = 0
     for index in range(132, 2, -1):
         #print(df.groupby('Carmodel').nth(index))
@@ -301,14 +323,6 @@ def generateTrainset(path):
     print(np.array(trainset).shape)
     print(np.array(validset).shape)
     return trainset_res, validset_res
-
-
-
-
-
-
-
-
 
 
 
