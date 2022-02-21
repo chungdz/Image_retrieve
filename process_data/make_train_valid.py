@@ -122,8 +122,8 @@ parser.add_argument("--dpath", default="/mnt/e/data/", type=str,
                         help="Path of the output dir.")
 args = parser.parse_args()
 image_index = os.path.join(args.dpath, 'indexinfo.csv')
-trainp = os.path.join(args.dpath, 'train.csv')
-validp = os.path.join(args.dpath, 'valid.csv')
+trainp = os.path.join(args.dpath, 'train.npy')
+validp = os.path.join(args.dpath, 'valid.npy')
 
 train, valid = generateTrainset(image_index)
 np.save(trainp, train)
