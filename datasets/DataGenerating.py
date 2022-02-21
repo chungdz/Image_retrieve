@@ -122,7 +122,6 @@ def changeImageShape(path):
         scale_percent = image1.shape[0]/224
         width = round(image1.shape[1] / scale_percent)
         height = round(image1.shape[0] / scale_percent)
-        
     else:
         scale_percent = image1.shape[1]/224
         width = round(image1.shape[1] / scale_percent)

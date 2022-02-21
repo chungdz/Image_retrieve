@@ -64,10 +64,15 @@ def generateTrainset(path):
         #print(M.shape)
         for x in X:
             templist = []
+            templist2 = []
             templist.append(x)
             templist.append(getrandom_pos(df, x))
-            templist.append(getrandom_neg(df, x))
+            templist.append(1)
+            templist2.append(x)
+            templist2.append(getrandom_neg(df, x))
+            templist2.append(0)
             validset.append(np.array(templist))
+            validset.append(np.array(templist2))
     
     count = 0
     for index in trange(132, 2, -1):
@@ -79,18 +84,15 @@ def generateTrainset(path):
         for m in M:
             if count == 2:
                 templist = []
+                templist2 = []
                 templist.append(m)
-                #append one positive and 3 negative
                 templist.append(getrandom_pos(df, m))
-                templist.append(getrandom_neg(df, m))
+                templist.append(1)
+                templist2.append(m)
+                templist2.append(getrandom_neg(df, m))
+                templist2.append(0)
                 validset.append(np.array(templist))
-            elif count == 4:
-                templist = []
-                templist.append(m)
-                #append one positive and 3 negative
-                templist.append(getrandom_pos(df, m))
-                templist.append(getrandom_neg(df, m))
-                validset.append(np.array(templist))
+                validset.append(np.array(templist2))
             else:
                 templist = []
                 templist.append(m)
@@ -104,7 +106,7 @@ def generateTrainset(path):
     
         count+=1
     
-        if count == 6:
+        if count == 3:
             count = 0
     
                 
