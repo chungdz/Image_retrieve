@@ -75,7 +75,7 @@ def generateTrainset(path):
         df_temp = df.groupby('Carmodel').nth(index)
     
         M = df_temp['Index'].to_numpy()
-        print(M.shape)
+        # print(M.shape)
         for m in M:
             if count == 2:
                 templist = []

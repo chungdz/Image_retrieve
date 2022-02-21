@@ -5,4 +5,5 @@ cd data
 
 cd ..
 python -m process_data.data_info
-python -m image_matrix
+python -m process_data.image_matrix
+python -m process_data.make_train_valid.py

@@ -93,7 +93,7 @@ def generateImageSet(dataframe, index=None, start=None, end=None, path=None):
         index_set.append(index)
         model_set.append(dataframe["CarModel"].iloc[image_num])
         index+=1
-        print("{}: Completed".format(index))
+        # print("{}: Completed".format(index))
     imageset = np.array(image_set, dtype = np.uint8)
 
     #save index info as a dataframe
