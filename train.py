@@ -31,7 +31,7 @@ def run(cfg, train_dataset, valid_dataset):
     valid_data_loader = DataLoader(valid_dataset, batch_size=cfg.batch_size, shuffle=False)
 
     # Build model.
-    model = GeMData(cfg.model_info)
+    model = GeM(cfg.model_info)
     model.to(0)
     # Build optimizer.
     steps_one_epoch = len(train_data_loader)
@@ -100,7 +100,7 @@ parser.add_argument("--lr", default=0.001, type=int)
 parser.add_argument("--save_path", default='para', type=str)
 parser.add_argument("--show_batch", default=1000, type=int)
 args = parser.parse_args()
-
+print('load data')
 matrixp = os.path.join(args.dpath, "imageset.npy")
 trainsetp = os.path.join(args.dpath, "train.npy")
 validsetp = os.path.join(args.dpath, "valid.npy")
