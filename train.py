@@ -38,12 +38,14 @@ def run(cfg, train_dataset, valid_dataset):
     train_steps = cfg.epoch * steps_one_epoch
     print("Total train steps: ", train_steps)
     optimizer = torch.optim.Adam(params=model.parameters(), lr=cfg.lr)
+    steplr = torch.optim.lr_scheduler.StepLR(optimizer=optimizer, step_size=1, gamma=0.5)
     # Training and validation
     
     for epoch in range(cfg.epoch):
         # print(model.match_prediction_layer.state_dict()['2.bias'])
         train(cfg, epoch, model, train_data_loader, optimizer, steps_one_epoch)
         validate(cfg, model, valid_data_loader)
+        steplr.step()
 
 def train(cfg, epoch, model, loader, optimizer, steps_one_epoch):
     model.train()
