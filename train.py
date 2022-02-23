@@ -58,7 +58,7 @@ def train(cfg, epoch, model, loader, optimizer, steps_one_epoch):
         data = data / 255.0
         data = data.to(0)
         pred = model(data, 224)
-        loss = F.cross_entropy(pred, input_label)
+        loss = F.cross_entropy(pred, input_label[:data.size(0)])
 
         # 3.Backward.
         loss.backward()
