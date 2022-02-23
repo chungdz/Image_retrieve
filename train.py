@@ -27,8 +27,8 @@ def run(cfg, train_dataset, valid_dataset):
     
     set_seed(7)
     # Build Dataloader
-    train_data_loader = DataLoader(train_dataset, batch_size=cfg.batch_size, shuffle=True, num_workers=4, pin_memory=True)
-    valid_data_loader = DataLoader(valid_dataset, batch_size=cfg.batch_size, shuffle=False, num_workers=4, pin_memory=True)
+    train_data_loader = DataLoader(train_dataset, batch_size=cfg.batch_size, shuffle=True, num_workers=8, pin_memory=True)
+    valid_data_loader = DataLoader(valid_dataset, batch_size=cfg.batch_size, shuffle=False, num_workers=8, pin_memory=True)
 
     # Build model.
     model = GeM(cfg.model_info)
