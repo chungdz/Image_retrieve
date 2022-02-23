@@ -2,5 +2,8 @@
 *checkpoint\.ipynb*
 \.ipynb_checkpoints
 \.vs*
+/data/
+/para/
+
 
 

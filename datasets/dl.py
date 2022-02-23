@@ -22,13 +22,12 @@ class FNNData(Dataset):
         return self.dataset.shape[0]
 
 class GeMData(Dataset):
-    def __init__(self, cfg, isValid=False):
+    def __init__(self, pm, ds, isValid=False):
         '''
         change in matrix to matrix path when really do it
         '''
-        self.cfg = cfg
-        self.pic_matrix = torch.ByteTensor(cfg.pic_matrix)
-        self.dataset = torch.LongTensor(cfg.dataset)
+        self.pic_matrix = pm
+        self.dataset = ds
         self.isValid = isValid
 
     def __getitem__(self, index):

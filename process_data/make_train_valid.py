@@ -1,132 +1,86 @@
-import imp
-import random
-from utils.train_util import set_seed
-from random import randrange
-import numpy as np
 import pandas as pd
+import numpy as np
+import collections
+import random
+from tqdm import tqdm
 import argparse
 import os
-from tqdm import trange
+import json
 
-set_seed(7)
+random.seed(7)
 
-#============================================================================#
-# get a random index of a positive sample for trainning set and validation set 
-#============================================================================#
-def getrandom_pos(df, index):
-    
-    #get all index for this car model, random one != current one
-    df_temp = df.loc[df['Index'] == index]
-    
-    carmodel = df_temp.iloc[0]['Carmodel']
-    temp = df.loc[df['Carmodel'] == carmodel]
-    random_array = temp['Index'].to_numpy()
-    random_array = random_array[random_array != index]
-    result = random.choice(random_array)
-    
-    return result
-
-
-#============================================================================#
-#get a random index of a negative sample for trainning set and validation set 
-#============================================================================#
-def getrandom_neg(df, index):
-    
-    df_temp = df.loc[df['Index'] == index]
-    carmodel = df_temp.iloc[0]['Carmodel']
-    temp = df.Carmodel.unique()
-    
-    rand_num = random.choice(temp)
-    while rand_num == carmodel:   #in case choose the same model
-        rand_num = rand_num = random.choice(temp)
-    
-    temp = df.loc[df['Carmodel'] == rand_num]
-    random_array = temp['Index'].to_numpy()
-    result = random.choice(random_array)
-    
-    return result
-    
-    
-#============================================================================#
-#generate train and validation sets
-#============================================================================#
-def generateTrainset(path):
-    df = pd.read_csv(path)
-
-    trainset = []
-    validset = []
-
-    for i in range(1, 3):
-    #add all last two images to validate set
-        df_temp = df.groupby('Carmodel').nth(i)
-    
-        X = df_temp['Index'].to_numpy()
-        #print(M.shape)
-        for x in X:
-            templist = []
-            templist2 = []
-            templist.append(x)
-            templist.append(getrandom_pos(df, x))
-            templist.append(1)
-            templist2.append(x)
-            templist2.append(getrandom_neg(df, x))
-            templist2.append(0)
-            validset.append(np.array(templist))
-            validset.append(np.array(templist2))
-    
-    count = 0
-    for index in trange(132, 2, -1):
-        #print(df.groupby('Carmodel').nth(index))
-        df_temp = df.groupby('Carmodel').nth(index)
-    
-        M = df_temp['Index'].to_numpy()
-        # print(M.shape)
-        for m in M:
-            if count == 2:
-                templist = []
-                templist2 = []
-                templist.append(m)
-                templist.append(getrandom_pos(df, m))
-                templist.append(1)
-                templist2.append(m)
-                templist2.append(getrandom_neg(df, m))
-                templist2.append(0)
-                validset.append(np.array(templist))
-                validset.append(np.array(templist2))
-            else:
-                templist = []
-                templist.append(m)
-                #append one positive and 3 negative
-                templist.append(getrandom_pos(df, m))
-                templist.append(getrandom_neg(df, m))
-                templist.append(getrandom_neg(df, m))
-                templist.append(getrandom_neg(df, m))
-                templist.append(getrandom_neg(df, m))
-                trainset.append(np.array(templist))
-    
-        count+=1
-    
-        if count == 3:
-            count = 0
-    
-                
-    
-    trainset_res = np.array(trainset)
-    validset_res = np.array(validset)
-    print(np.array(trainset).shape)
-    print(np.array(validset).shape)
-    return trainset_res, validset_res
+radio = 7
+neg_count = 4
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dpath", default="/mnt/e/data/", type=str,
                         help="Path of the output dir.")
+parser.add_argument("--ratio", default=7, type=int,
+                        help="#valid over #train.")
+parser.add_argument("--neg_count", default=4, type=int,
+                        help="negative count.")
 args = parser.parse_args()
-image_index = os.path.join(args.dpath, 'indexinfo.csv')
-trainp = os.path.join(args.dpath, 'train.npy')
-validp = os.path.join(args.dpath, 'valid.npy')
 
-train, valid = generateTrainset(image_index)
-np.save(trainp, train)
-np.save(validp, valid)
+indexpath = os.path.join(args.dpath, "indexinfo.csv")
+train_path = os.path.join(args.dpath, "train.npy")
+valid_path = os.path.join(args.dpath, "valid.npy")
+zero_path = os.path.join(args.dpath, "zero.json")
 
+zero_set = set(json.load(open(zero_path, "r")))
+fdf = pd.read_csv(indexpath)
+end_index = fdf.shape[0] - 1
+
+cdict = collections.defaultdict(set)
+for pic_index, carm_index in fdf.values:
+    assert(pic_index not in cdict[carm_index]) 
+    cdict[carm_index].add(pic_index)
+
+train_set = []
+valid_set = []
+for carm_index, pic_set in tqdm(cdict.items(), total=len(cdict), desc='make train and valid'):
+    pic_list = list(pic_set)
+    cur_len = len(pic_list)
+    valid_num = cur_len // args.ratio
+    train_num = cur_len - valid_num 
+    valid_list = pic_list[:valid_num]
+    train_list = pic_list[valid_num:]
+    
+    for i in range(train_num - 1):
+        for j in range(i + 1, train_num):
+            new_sample = [pic_list[i], pic_list[j]]
+            while len(new_sample) < 2 + args.neg_count:
+                neg_idx = random.randint(0, end_index - 1)
+                if neg_idx not in pic_set and neg_idx not in new_sample:
+                    new_sample.append(neg_idx)
+            train_set.append(new_sample)
+            # has_zero = False
+            # for idx in new_sample:
+            #     if idx in zero_set:
+            #         has_zero = True
+            #         break
+            # if not has_zero:
+            #     train_set.append(new_sample)
+    
+    pos_sample_valid = random.sample(train_list, valid_num)
+    for i in range(valid_num):
+        new_sample_pos = [valid_list[i], pos_sample_valid[i], 1]
+        new_sample_neg = [valid_list[i]]
+        while len(new_sample_neg) < 2:
+            neg_idx = random.randint(0, end_index - 1)
+            if neg_idx not in pic_set and neg_idx != valid_list[i]:
+                new_sample_neg.append(neg_idx)
+        new_sample_neg.append(0)
+        valid_set.append(new_sample_pos)
+        valid_set.append(new_sample_neg)
+        # if new_sample_pos[0] not in zero_set and new_sample_pos[1] not in zero_set:
+        #     valid_set.append(new_sample_pos)
+        # if new_sample_neg[0] not in zero_set and new_sample_neg[1] not in zero_set:
+        #     valid_set.append(new_sample_neg)
+
+train_set = np.array(train_set)
+valid_set = np.array(valid_set)
+print(train_set.shape, valid_set.shape)
+
+np.save(train_path, train_set)
+np.save(valid_path, valid_set)
 
