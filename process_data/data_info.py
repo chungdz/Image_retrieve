@@ -45,13 +45,16 @@ filenames = []
 
 for l in tqdm(files, total=len(files)):
     l = l + "/"
+    files1 = None
     files1 = os.listdir(path + l) 
     for k in files1:
         k = k + "/"
+        files2 = None
         files2 = os.listdir(path + l + k) 
 
         for j in files2:
             j = j + "/"
+            files3 = None
             files3  = os.listdir(path + l + k + j) 
 
             for i in files3:

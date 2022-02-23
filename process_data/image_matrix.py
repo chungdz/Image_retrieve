@@ -57,7 +57,8 @@ def changeImageShape(path):
         resized_image[0:224, 0:center_temp] = gaussiand_image_left
         resized_image[0:224, (224-center_temp):224] = gaussiand_image_right
     
-    return resized_image
+    
+    return np.reshape(resized_image, (3,224,224))
 
 #============================================================================#
 #generateImageSet(dataframe, index, start, end)
@@ -89,6 +90,8 @@ def generateImageSet(dataframe, index=None, start=None, end=None, path=None):
         if not path is None:
             impath = path + dataframe["Path"].iloc[image_num]
         resized_image = changeImageShape(impath)
+        if resized_image.sum() == 0:
+            exit()
         image_set.append(resized_image)
         index_set.append(index)
         model_set.append(dataframe["CarModel"].iloc[image_num])
