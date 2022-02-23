@@ -87,7 +87,7 @@ def validate(cfg, model, valid_data_loader):
             res = model(input_data, 224, valid_mode=True)
             labels += label_data.cpu().numpy().tolist()
             preds += res.cpu().numpy().tolist()
-    
+    print('running score')
     score = roc_auc_score(labels, preds)
     print(score)
 
