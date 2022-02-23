@@ -111,7 +111,7 @@ trainset = torch.LongTensor(np.load(trainsetp))
 validset = torch.LongTensor(np.load(validsetp))
 
 train_dataset = GeMData(pmatrix, trainset)
-valid_dataset = GeMData(pmatrix, validset)
+valid_dataset = GeMData(pmatrix, validset, isValid=True)
 run(args, train_dataset, valid_dataset)
 
 
