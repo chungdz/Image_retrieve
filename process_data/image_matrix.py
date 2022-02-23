@@ -113,7 +113,7 @@ img_path = os.path.join(args.dpath, "Image_data/data/image/")
 
 npm, dfm = generateImageSet(pd.read_csv(front_csv_path), path=img_path)
 
-np.save(matrix_path, npm)
+np.save(matrix_path, np.transpose(npm, (0, 3, 1, 2)))
 dfm.to_csv(image_index, index=None)
 
 
