@@ -53,10 +53,13 @@ for carm_index, pic_set in tqdm(cdict.items(), total=len(cdict), desc='make trai
                 if neg_idx not in pic_set and neg_idx not in new_sample:
                     new_sample.append(neg_idx)
             
+            has_zero = False
             for idx in new_sample:
                 if idx in zero_set:
-                    continue
-            train_set.append(new_sample)
+                    has_zero = True
+                    break
+            if not has_zero:
+                train_set.append(new_sample)
     
     pos_sample_valid = random.sample(train_list, valid_num)
     for i in range(valid_num):
