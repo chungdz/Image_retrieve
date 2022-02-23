@@ -81,7 +81,7 @@ def validate(cfg, model, valid_data_loader):
     preds = []
     with torch.no_grad():
         for data in tqdm(valid_data_loader, total=len(valid_data_loader), desc="valid"):
-            input_data = data[:, :-1] / 256.0
+            input_data = data[:, :-1] / 255.0
             label_data = data[:, -1]
             input_data = input_data.to(0)
             res = model(input_data, 224, valid_mode=True)
