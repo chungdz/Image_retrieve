@@ -24,9 +24,9 @@ args = parser.parse_args()
 indexpath = os.path.join(args.dpath, "indexinfo.csv")
 train_path = os.path.join(args.dpath, "train.npy")
 valid_path = os.path.join(args.dpath, "valid.npy")
-zero_path = os.path.join(args.dpath, "zero.json")
+# zero_path = os.path.join(args.dpath, "zero.json")
 
-zero_set = set(json.load(open(zero_path, "r")))
+# zero_set = set(json.load(open(zero_path, "r")))
 fdf = pd.read_csv(indexpath)
 end_index = fdf.shape[0] - 1
 
