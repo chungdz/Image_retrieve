@@ -55,7 +55,7 @@ def train(cfg, epoch, model, loader, optimizer, steps_one_epoch):
 
     for data in enum_dataloader:
         # 1. Forward
-        data = data / 256.0
+        data = data / 255.0
         data = data.to(0)
         pred = model(data, 224)
         loss = F.cross_entropy(pred, input_label)

@@ -4,18 +4,19 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision.models.vgg import vgg11
-from torchvision.models.resnet import ResNet, BasicBlock, Bottleneck
+from torchvision.models.resnet import ResNet, BasicBlock, Bottleneck, model_urls
+from torchvision._internally_replaced_utils import load_state_dict_from_url
 
 class ResNetRaw(ResNet):
 
     def __init__(self, arch):
-        if arch == '18':
+        if arch == 'resnet18':
             b = BasicBlock
             layers = [2, 2, 2, 2]
         else:
             b = Bottleneck
             layers = [3, 4, 6, 3]
-        super(ResNetRaw, self).__init__(b, layers, num_classes=10)
+        super(ResNetRaw, self).__init__(b, layers, num_classes=1000)
     
     def forward(self, x):
         # See note [TorchScript super()]
@@ -36,6 +37,9 @@ class GeM(nn.Module):
     def __init__(self, cfg):
         super(GeM, self).__init__()
         self.resnet = ResNetRaw(cfg.arch)
+        state_dict = load_state_dict_from_url(model_urls[cfg.arch],
+                                              progress=cfg.progress)
+        self.resnet.load_state_dict(state_dict)
         self.neg_count = cfg.neg_count
         self.hidden_size = cfg.hidden_size
         self.p = nn.Parameter(torch.Tensor([3]))

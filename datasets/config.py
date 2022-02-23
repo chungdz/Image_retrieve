@@ -17,7 +17,9 @@ class GeMConfig():
 
         self.neg_count = 4
         self.hidden_size = 512
-        self.arch = '18'
+        self.arch = 'resnet18'
+        self.progress = True
+
 
 
 
