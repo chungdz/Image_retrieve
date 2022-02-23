@@ -5,6 +5,7 @@ import random
 from tqdm import tqdm
 import argparse
 import os
+import json
 
 random.seed(7)
 
@@ -23,7 +24,9 @@ args = parser.parse_args()
 indexpath = os.path.join(args.dpath, "indexinfo.csv")
 train_path = os.path.join(args.dpath, "train.npy")
 valid_path = os.path.join(args.dpath, "valid.npy")
+zero_path = os.path.join(args.path, "zero.json")
 
+zero_set = set(json.load(open(zero_path, "r")))
 fdf = pd.read_csv(indexpath)
 end_index = fdf.shape[0] - 1
 
@@ -49,6 +52,10 @@ for carm_index, pic_set in tqdm(cdict.items(), total=len(cdict), desc='make trai
                 neg_idx = random.randint(0, end_index - 1)
                 if neg_idx not in pic_set and neg_idx not in new_sample:
                     new_sample.append(neg_idx)
+            
+            for idx in new_sample:
+                if idx in zero_set:
+                    continue
             train_set.append(new_sample)
     
     pos_sample_valid = random.sample(train_list, valid_num)
@@ -60,8 +67,10 @@ for carm_index, pic_set in tqdm(cdict.items(), total=len(cdict), desc='make trai
             if neg_idx not in pic_set and neg_idx != valid_list[i]:
                 new_sample_neg.append(neg_idx)
         new_sample_neg.append(0)
-        valid_set.append(new_sample_pos)
-        valid_set.append(new_sample_neg)
+        if new_sample_pos[0] not in zero_set and new_sample_pos[1] not in zero_set:
+            valid_set.append(new_sample_pos)
+        if new_sample_neg[0] not in zero_set and new_sample_neg[1] not in zero_set:
+            valid_set.append(new_sample_neg)
 
 train_set = np.array(train_set)
 valid_set = np.array(valid_set)
