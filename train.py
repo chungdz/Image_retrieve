@@ -76,7 +76,6 @@ def train(cfg, epoch, model, loader, optimizer, steps_one_epoch):
         if str(loss.item()) == 'nan':
             print(loss_list[-100:])
             print(index)
-            print(data)
             exit()
             
         if index % cfg.show_batch == 0 and index > 0:
