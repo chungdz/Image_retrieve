@@ -17,7 +17,8 @@ class GeMConfig():
 
         self.neg_count = 4
         self.hidden_size = 512
-        self.arch = '18'
+        self.progress = True
+
 
 
 
