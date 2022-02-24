@@ -47,7 +47,7 @@ class GeM(nn.Module):
     def gem(self, x):
         xsize = torch.linalg.vector_norm(x, ord=2, dim=-1, keepdim=False)
         xpower = torch.sum(torch.pow(x, self.p), dim=-1, keepdim=False)
-        gem = torch.pow(xpower / xsize, 1 / self.p)
+        gem = torch.pow(xpower / xsize + 1e-6, 1 / self.p)
         return gem
     
     def forward(self, data, l, valid_mode=False):
