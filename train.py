@@ -41,7 +41,7 @@ def run(cfg, train_dataset, valid_dataset):
     train_steps = cfg.epoch * steps_one_epoch
     print("Total train steps: ", train_steps)
     optimizer = torch.optim.Adam(params=model.parameters(), lr=cfg.lr)
-    steplr = torch.optim.lr_scheduler.StepLR(optimizer=optimizer, step_size=1, gamma=0.5)
+    steplr = torch.optim.lr_scheduler.StepLR(optimizer=optimizer, step_size=1, gamma=cfg.lr_shrink)
     # Training and validation
     for epoch in range(cfg.epoch):
         print("lr in this epoch:", steplr.get_last_lr())
@@ -68,6 +68,8 @@ def train(cfg, epoch, model, loader, optimizer, steps_one_epoch):
 
         # 3.Backward.
         loss.backward()
+        # try gradient clipper to avoid gradient explosion
+        # torch.nn.utils.clip_grad_norm_(model.parameters(), 0.1)
         optimizer.step()
         model.zero_grad()
         # index add
@@ -111,6 +113,7 @@ parser.add_argument("--lr", default=0.001, type=float)
 parser.add_argument("--save_path", default='para', type=str)
 parser.add_argument("--arch", default='resnet18', type=str)
 parser.add_argument("--show_batch", default=1000, type=int)
+parser.add_argument("--lr_shrink", default=0.5, type=float)
 args = parser.parse_args()
 print('load data')
 matrixp = os.path.join(args.dpath, "imageset.npy")
