@@ -40,9 +40,8 @@ def run(cfg, train_dataset, valid_dataset):
     optimizer = torch.optim.Adam(params=model.parameters(), lr=cfg.lr)
     steplr = torch.optim.lr_scheduler.StepLR(optimizer=optimizer, step_size=1, gamma=0.5)
     # Training and validation
-    
     for epoch in range(cfg.epoch):
-        # print(model.match_prediction_layer.state_dict()['2.bias'])
+        print("lr in this epoch:", steplr.get_last_lr())
         train(cfg, epoch, model, train_data_loader, optimizer, steps_one_epoch)
         validate(cfg, model, valid_data_loader)
         steplr.step()
@@ -54,7 +53,7 @@ def train(cfg, epoch, model, loader, optimizer, steps_one_epoch):
     index = 0
     mean_loss = 0
     input_label = torch.zeros((cfg.batch_size), dtype=torch.long).to(0)
-
+    loss_list = []
     for data in enum_dataloader:
         # 1. Forward
         data = data / 255.0
@@ -72,6 +71,10 @@ def train(cfg, epoch, model, loader, optimizer, steps_one_epoch):
         if index % cfg.show_batch == 0 and index > 0:
             cur_mean_loss = mean_loss / cfg.show_batch
             enum_dataloader.set_description("EP-{} train, batch {} loss is {}".format(epoch, index, cur_mean_loss))
+            if str(cur_mean_loss) == 'nan':
+                print(loss_list[-100:])
+                exit()
+            loss_list.append(mean_loss)
             mean_loss = 0
     
     torch.save(model.state_dict(), os.path.join(cfg.save_path, "model.ep{}".format(epoch)))
