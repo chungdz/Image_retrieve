@@ -34,8 +34,8 @@ def run(cfg, train_dataset, valid_dataset):
     model = GeM(cfg.model_info)
     model.to(0)
     # for bug fixing
-    pretrained_model = torch.load('ir/para/model.ep0', map_location='cpu')
-    print(model.load_state_dict(pretrained_model, strict=False))
+    # pretrained_model = torch.load('ir/para/model.ep0', map_location='cpu')
+    # print(model.load_state_dict(pretrained_model, strict=False))
     # Build optimizer.
     steps_one_epoch = len(train_data_loader)
     train_steps = cfg.epoch * steps_one_epoch
@@ -45,9 +45,9 @@ def run(cfg, train_dataset, valid_dataset):
     # Training and validation
     for epoch in range(cfg.epoch):
         print("lr in this epoch:", steplr.get_last_lr())
-        if epoch == 0:
-            steplr.step()
-            continue
+        # if epoch == 0:
+        #     steplr.step()
+        #     continue
         train(cfg, epoch, model, train_data_loader, optimizer, steps_one_epoch)
         validate(cfg, model, valid_data_loader)
         steplr.step()
