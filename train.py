@@ -33,6 +33,9 @@ def run(cfg, train_dataset, valid_dataset):
     # Build model.
     model = GeM(cfg.model_info)
     model.to(0)
+    # for bug fixing
+    pretrained_model = torch.load('ir/para/model.ep0', map_location='cpu')
+    print(model.load_state_dict(pretrained_model, strict=False))
     # Build optimizer.
     steps_one_epoch = len(train_data_loader)
     train_steps = cfg.epoch * steps_one_epoch
@@ -42,6 +45,9 @@ def run(cfg, train_dataset, valid_dataset):
     # Training and validation
     for epoch in range(cfg.epoch):
         print("lr in this epoch:", steplr.get_last_lr())
+        if epoch == 0:
+            steplr.step()
+            continue
         train(cfg, epoch, model, train_data_loader, optimizer, steps_one_epoch)
         validate(cfg, model, valid_data_loader)
         steplr.step()
@@ -49,12 +55,11 @@ def run(cfg, train_dataset, valid_dataset):
 def train(cfg, epoch, model, loader, optimizer, steps_one_epoch):
     model.train()
     model.zero_grad()
-    enum_dataloader = tqdm(loader, total=len(loader), desc="EP-{} train".format(epoch))
-    index = 0
+    enum_dataloader = tqdm(enumerate(loader), total=len(loader), desc="EP-{} train".format(epoch))
     mean_loss = 0
     input_label = torch.zeros((cfg.batch_size), dtype=torch.long).to(0)
     loss_list = []
-    for data in enum_dataloader:
+    for index, data in enum_dataloader:
         # 1. Forward
         data = data / 255.0
         data = data.to(0)
@@ -66,15 +71,17 @@ def train(cfg, epoch, model, loader, optimizer, steps_one_epoch):
         optimizer.step()
         model.zero_grad()
         # index add
-        index += 1
-        mean_loss += loss
+        mean_loss += loss.item()
+        loss_list.append(loss.item())
+        if str(loss.item()) == 'nan':
+            print(loss_list[-100:])
+            print(index)
+            print(data)
+            exit()
+            
         if index % cfg.show_batch == 0 and index > 0:
             cur_mean_loss = mean_loss / cfg.show_batch
             enum_dataloader.set_description("EP-{} train, batch {} loss is {}".format(epoch, index, cur_mean_loss))
-            if str(cur_mean_loss) == 'nan':
-                print(loss_list[-100:])
-                exit()
-            loss_list.append(mean_loss)
             mean_loss = 0
     
     torch.save(model.state_dict(), os.path.join(cfg.save_path, "model.ep{}".format(epoch)))
