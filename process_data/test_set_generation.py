@@ -4,7 +4,7 @@ import numpy as np
 import argparse
 import os
 from tqdm import tqdm 
-import json
+import pickle
 
 #============================================================================#
 #changeImageShape(path)
@@ -90,6 +90,7 @@ dfpath = os.path.join(args.dpath, "test_model.csv")
 indexpath = os.path.join(args.dpath, "indexinfo.csv")
 test_image_path = os.path.join(args.dpath, "test_image.npy")
 test_set_path = os.path.join(args.dpath, "test.npy")
+dictionary_path = os.path.join(args.dpath, "model_num.json")
 
 df = pd.read_csv(dfpath, header = None)
 indexset = pd.read_csv(indexpath)
@@ -131,9 +132,7 @@ for l in tqdm(files, total=len(files)):
 
 np.save(test_image_path, np.array(image_set, dtype = np.uint8))
 np.save(test_set_path, np.array(test_set))
-json = json.dumps(index_dict)
-f = open("test_dict.json","w")
-f.write(json)
-f.close()
+with open(dictionary_path, 'wb') as fp:
+    pickle.dump(index_dict, fp)
 print(np.array(image_set, dtype = np.uint8).shape)
 print( np.array(test_set).shape)
