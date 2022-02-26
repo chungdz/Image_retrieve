@@ -98,4 +98,11 @@ class GeM(nn.Module):
         r = self.gem(r)
         return r
     
+    def mips(self, data, l, db, k=20):
+        curq = self.predict(data, l)
+        cur_score = torch.matmul(curq, db)
+        _, topk = torch.topk(cur_score, k, dim=1)
+        return topk
+
+    
 
