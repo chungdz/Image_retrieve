@@ -4,7 +4,7 @@ import numpy as np
 import argparse
 import os
 from tqdm import tqdm 
-import pickle
+import json
 
 #============================================================================#
 #changeImageShape(path)
@@ -105,7 +105,7 @@ for l in tqdm(files, total=len(files)):
     files1 = None
     files1 = os.listdir(path + l1) 
     for images in files1:
-        index+=1
+        index += 1
         path_temp = path + l1 + images
         
         #Resize_testset_image
@@ -132,7 +132,7 @@ for l in tqdm(files, total=len(files)):
 
 np.save(test_image_path, np.array(image_set, dtype = np.uint8))
 np.save(test_set_path, np.array(test_set))
-with open(dictionary_path, 'wb') as fp:
-    pickle.dump(index_dict, fp)
+saved_index = {k: v.tolist() for k, v in index_dict.items()}
+json.dump(saved_index, open(dictionary_path, 'w'))
 print(np.array(image_set, dtype = np.uint8).shape)
-print( np.array(test_set).shape)
+print(np.array(test_set).shape)
