@@ -18,8 +18,7 @@ import torch.nn.functional as F
 parser = argparse.ArgumentParser()
 parser.add_argument("--dpath", default="ir", type=str,
                         help="Path of the output dir.")
-parser.add_argument("--batch_size", default=32, type=int)
-parser.add_argument("--arch", default='resnet18', type=str)
+parser.add_argument("--batch_size", default=1024, type=int)
 parser.add_argument("--save_path", default='ir/para/model.ep0', type=str)
 parser.add_argument("--k", default=20, type=int)
 args = parser.parse_args()
@@ -43,11 +42,9 @@ batch_res = []
 db_tensor = torch.FloatTensor(np.load(dbp).T).to(0)
 with torch.no_grad():
     for data in tqdm(data_loader, total=len(data_loader), desc="generate vectors"):
-        
-        input_data = input_data.to(0)
+        input_data = data.to(0)
         cur_score = torch.matmul(input_data, db_tensor)
         _, topk = torch.topk(cur_score, args.k, dim=1)
-        
         batch_res.append(topk.cpu().numpy())
 
 final_matrix = np.concatenate(batch_res, axis=0)
