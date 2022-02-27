@@ -105,7 +105,6 @@ for l in tqdm(files, total=len(files)):
     files1 = None
     files1 = os.listdir(path + l1) 
     for images in files1:
-        index += 1
         path_temp = path + l1 + images
         
         #Resize_testset_image
@@ -129,6 +128,7 @@ for l in tqdm(files, total=len(files)):
         temp_set.append(index)
         temp_set.append(int(l)-1)
         test_set.append(np.array(temp_set))
+        index += 1
 
 np.save(test_image_path, np.array(image_set, dtype = np.uint8))
 np.save(test_set_path, np.array(test_set))
