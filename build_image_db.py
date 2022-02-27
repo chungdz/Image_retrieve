@@ -15,16 +15,17 @@ import gc
 import torch.nn.functional as F
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--dpath", default="ir", type=str,
-                        help="Path of the output dir.")
+parser.add_argument("--dpath", default="ir", type=str, help="Path of the output dir.")
 parser.add_argument("--batch_size", default=32, type=int)
 parser.add_argument("--arch", default='resnet18', type=str)
 parser.add_argument("--save_path", default='ir/para/model.ep0', type=str)
+parser.add_argument("--input", default="imageset.npy", type=str, help="input file")
+parser.add_argument("--output", default="database.npy", type=str, help="output file")
 args = parser.parse_args()
 
-matrixp = os.path.join(args.dpath, "imageset.npy")
+matrixp = os.path.join(args.dpath, args.input)
 modelp = os.path.join(args.save_path)
-dbp = os.path.join(args.dpath, "database.npy")
+dbp = os.path.join(args.dpath, args.output)
 print('load data')
 pmatrix = torch.ByteTensor(np.load(matrixp))
 indexlist = torch.arange(pmatrix.size(0))

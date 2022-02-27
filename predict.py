@@ -21,39 +21,34 @@ parser.add_argument("--dpath", default="ir", type=str,
 parser.add_argument("--batch_size", default=32, type=int)
 parser.add_argument("--arch", default='resnet18', type=str)
 parser.add_argument("--save_path", default='ir/para/model.ep0', type=str)
+parser.add_argument("--k", default=20, type=int)
 args = parser.parse_args()
 
 modelp = os.path.join(args.save_path)
 dbp = os.path.join(args.dpath, "database.npy")
 testp = os.path.join(args.dpath, "test.npy")
-imagep = os.path.join(args.dpath, "test_image.npy")
+imagep = os.path.join(args.dpath, "tdatabase.npy")
 classp = os.path.join(args.dpath, "model_num.json")
 resp = os.path.join(args.dpath, "mAP.json")
 print('load data')
 md = json.load(open(classp, "r"))
-image_matrix = torch.ByteTensor(np.load(imagep))
+image_matrix = torch.FloatTensor(np.load(imagep))
 testset = np.load(testp)
 testinput = testset[:, 0]
 test_class = testset[:, 1]
 dataset = GeMData(image_matrix, torch.LongTensor(testinput))
 data_loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False, num_workers=8, pin_memory=True)
-print('load trained model')
-model_info = GeMConfig()
-model_info.arch = args.arch
-model = GeM(model_info)
-pretrained_model = torch.load(modelp, map_location='cpu')
-print(model.load_state_dict(pretrained_model, strict=False))
-model.to(0)
 
-model.eval()  
 batch_res = []
 db_tensor = torch.FloatTensor(np.load(dbp).T).to(0)
 with torch.no_grad():
     for data in tqdm(data_loader, total=len(data_loader), desc="generate vectors"):
-        input_data = data / 255.0
+        
         input_data = input_data.to(0)
-        res = model.mips(input_data, 224, db_tensor)
-        batch_res.append(res.cpu().numpy())
+        cur_score = torch.matmul(input_data, db_tensor)
+        _, topk = torch.topk(cur_score, args.k, dim=1)
+        
+        batch_res.append(topk.cpu().numpy())
 
 final_matrix = np.concatenate(batch_res, axis=0)
 print(final_matrix.shape)
