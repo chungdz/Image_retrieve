@@ -13,7 +13,7 @@ import os
 from tqdm import tqdm
 import gc
 import torch.nn.functional as F
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_auc_score, roc_curve
 
 def run(cfg, train_dataset, valid_dataset):
     """
@@ -102,7 +102,10 @@ def validate(cfg, model, valid_data_loader):
             preds += res.cpu().numpy().tolist()
     print('running score')
     score = roc_auc_score(labels, preds)
-    print(score)
+    fpr, tpr, threshold = roc_curve(labels, preds, pos_label=1)
+    fnr = 1 - tpr
+    eer = fpr[np.nanargmin(np.absolute((fnr - fpr)))]
+    print("AUC:", score, "EER:", eer)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dpath", default="/mnt/e/data/", type=str,
