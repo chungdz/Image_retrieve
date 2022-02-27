@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.cluster import KMeans
 import logging
 import sys
+import functools
 from collections import namedtuple
 from .utils import iterate_splits, predict_cluster
 
@@ -139,7 +140,7 @@ def accumulate_covariance_estimators(data, C):
     residuals = np.zeros((N, D))            # residual for data points given cluster assignment
 
     # Iterate data points, accumulate estimators
-    for i in xrange(N):
+    for i in range(N):
         d = data[i]
 
         # Find cluster assignment and residual
@@ -182,7 +183,7 @@ def compute_rotations_from_accumulators(A, mu, count, num_buckets):
 
     # For each cluster, use accumulator variables to estimate covariance matrix
     # and compute rotation matrix
-    for i in xrange(V):
+    for i in range(V):
 
         # Normalize
         num_points = count[i]
@@ -226,7 +227,7 @@ def project_residuals_to_local(residuals, assignments, Rs, mu):
         an NxD array of locally projected residuals
     """
     projected = np.zeros(residuals.shape)
-    for i in xrange(residuals.shape[0]):
+    for i in range(residuals.shape[0]):
         res = residuals[i]
         a = assignments[i]
         projected[i] = np.dot(Rs[a], res - mu[a])
@@ -615,7 +616,7 @@ class LOPQModel(object):
             C, R, mu, subC = self.get_split_parameters(split)
 
             # Concatenate the cluster centroids for this split of fine codes
-            sx = reduce(lambda acc, c: np.concatenate((acc, subC[c[0]][c[1]])), enumerate(fc), [])
+            sx = functools.reduce(lambda acc, c: np.concatenate((acc, subC[c[0]][c[1]])), enumerate(fc), [])
 
             # Project residual out of local space
             cluster = coarse_codes[split]
@@ -772,5 +773,5 @@ class LOPQModel(object):
             return LOPQModel(parameters=(Cs, Rs, mus, subs))
 
         except IOError:
-            print filename + ": Could not open file."
+            print(filename + ": Could not open file.")
             return None
