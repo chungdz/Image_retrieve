@@ -58,7 +58,7 @@ def changeImageShape(path):
         resized_image[0:224, (224-center_temp):224] = gaussiand_image_right
     
     
-    return np.reshape(resized_image, (3,224,224))
+    return resized_image
 
 #============================================================================#
 #generateImageSet(dataframe, index, start, end)

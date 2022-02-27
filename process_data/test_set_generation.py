@@ -71,7 +71,7 @@ def changeImageShape(path):
     else:
         resized_image[0:resized.shape[0], 0:resized.shape[1]] = resized[0:resized.shape[0], 0:resized.shape[1]]
 
-    return np.reshape(resized_image, (3,224,224))
+    return resized_image.transpose(2,0,1)
 
 
 
