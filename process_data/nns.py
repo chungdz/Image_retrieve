@@ -25,7 +25,7 @@ testset = np.load(testp)
 # Define a model and fit it to data
 print('fit')
 model = LOPQModel(V=8, M=args.dimension, subquantizer_clusters=256)
-model.fit(db)
+model.fit(db, verbose=True, random_state=7)
 
 # Compute the LOPQ codes for a vector
 # code = model.predict(x)
@@ -37,17 +37,18 @@ searcher.add_data(db)
 # Retrieve ranked nearest neighbors
 res = []
 for imgidx, imgclass in tqdm(testset):
-    nns = searcher.search(testdb[imgidx], quota=args.k)
+    results, visited = searcher.search(testdb[imgidx], quota=args.k)
+    nns = [r.id for r in list(results)]
     res.append(nns)
 
-final_matrix = np.array(res, axis=0)
+final_matrix = np.array(res)
 print(final_matrix.shape)
 
 test_class = testset[:, 1]
 labeled = np.zeros(final_matrix.shape)
 mAP_list = []
 for i in tqdm(range(final_matrix.shape[0]), desc='map to binary and calculate mAP'):
-    cur_s = set(md[test_class[i]])
+    cur_s = set(md[str(test_class[i])])
     plist = []
     for j in range(final_matrix.shape[1]):
         labeled[i, j] = int(final_matrix[i][j] in cur_s)

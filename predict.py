@@ -19,11 +19,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--dpath", default="ir", type=str,
                         help="Path of the output dir.")
 parser.add_argument("--batch_size", default=1024, type=int)
-parser.add_argument("--save_path", default='ir/para/model.ep0', type=str)
 parser.add_argument("--k", default=20, type=int)
 args = parser.parse_args()
 
-modelp = os.path.join(args.save_path)
 dbp = os.path.join(args.dpath, "database.npy")
 testp = os.path.join(args.dpath, "test.npy")
 imagep = os.path.join(args.dpath, "tdatabase.npy")
@@ -53,7 +51,7 @@ print(final_matrix.shape)
 labeled = np.zeros(final_matrix.shape)
 mAP_list = []
 for i in tqdm(range(final_matrix.shape[0]), desc='map to binary and calculate mAP'):
-    cur_s = set(md[test_class[i]])
+    cur_s = set(md[str(test_class[i])])
     plist = []
     for j in range(final_matrix.shape[1]):
         labeled[i, j] = int(final_matrix[i][j] in cur_s)
