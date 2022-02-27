@@ -5,7 +5,7 @@ from collections import defaultdict, namedtuple
 from itertools import count
 import numpy as np
 import array
-from utils import iterate_splits, compute_codes_parallel
+from lopq.utils import iterate_splits, compute_codes_parallel
 
 
 def multisequence(x, centroids):

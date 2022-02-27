@@ -5,7 +5,7 @@ from sklearn.cluster import KMeans
 import logging
 import sys
 from collections import namedtuple
-from utils import iterate_splits, predict_cluster
+from lopq.utils import iterate_splits, predict_cluster
 from functools import reduce
 
 logger = logging.getLogger(__name__)
