@@ -5,7 +5,7 @@ from collections import defaultdict, namedtuple
 from itertools import count
 import numpy as np
 import array
-from .utils import iterate_splits, compute_codes_parallel
+from utils import iterate_splits, compute_codes_parallel
 
 
 def multisequence(x, centroids):
@@ -56,7 +56,7 @@ def multisequence(x, centroids):
     # Initialize priority queue
     h = []
     traversed = set()
-    start_inds = tuple(0 for _ in range(splits))
+    start_inds = tuple(0 for _ in np.arange(splits))
     start_dist = dist_for_cell(cell_for_inds(start_inds))
     heapq.heappush(h, (start_dist, start_inds))
 

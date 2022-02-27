@@ -4,9 +4,9 @@ import numpy as np
 from sklearn.cluster import KMeans
 import logging
 import sys
-import functools
 from collections import namedtuple
-from .utils import iterate_splits, predict_cluster
+from utils import iterate_splits, predict_cluster
+from functools import reduce
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.WARNING)
@@ -39,7 +39,7 @@ def eigenvalue_allocation(num_buckets, eigenvalues):
         a vector of indices by which to permute the eigenvectors
     """
     D = len(eigenvalues)
-    dims_per_bucket = D / num_buckets
+    dims_per_bucket = int(D / num_buckets)
     eigenvalue_product = np.zeros(num_buckets, dtype=float)
     bucket_size = np.zeros(num_buckets, dtype=int)
     permutation = np.zeros((num_buckets, dims_per_bucket), dtype=int)
@@ -140,7 +140,7 @@ def accumulate_covariance_estimators(data, C):
     residuals = np.zeros((N, D))            # residual for data points given cluster assignment
 
     # Iterate data points, accumulate estimators
-    for i in range(N):
+    for i in np.arange(N):
         d = data[i]
 
         # Find cluster assignment and residual
@@ -183,7 +183,7 @@ def compute_rotations_from_accumulators(A, mu, count, num_buckets):
 
     # For each cluster, use accumulator variables to estimate covariance matrix
     # and compute rotation matrix
-    for i in range(V):
+    for i in np.arange(V):
 
         # Normalize
         num_points = count[i]
@@ -227,7 +227,7 @@ def project_residuals_to_local(residuals, assignments, Rs, mu):
         an NxD array of locally projected residuals
     """
     projected = np.zeros(residuals.shape)
-    for i in range(residuals.shape[0]):
+    for i in np.arange(residuals.shape[0]):
         res = residuals[i]
         a = assignments[i]
         projected[i] = np.dot(Rs[a], res - mu[a])
@@ -359,8 +359,8 @@ def train(data, V=8, M=4, subquantizer_clusters=256, parameters=None,
         mu1, mu2 = mus
         assignments1 = assignments2 = residuals1 = residuals2 = None
     else:
-        Rs1, mu1, assignments1, residuals1 = compute_local_rotations(first_half, C1, M / 2)
-        Rs2, mu2, assignments2, residuals2 = compute_local_rotations(second_half, C2, M / 2)
+        Rs1, mu1, assignments1, residuals1 = compute_local_rotations(first_half, C1, int(M / 2))
+        Rs2, mu2, assignments2, residuals2 = compute_local_rotations(second_half, C2, int(M / 2))
 
     # Subquantizers don't need as much data, so we could sample here
     subquantizer_sample_ratio = min(subquantizer_sample_ratio, 1.0)
@@ -385,8 +385,8 @@ def train(data, V=8, M=4, subquantizer_clusters=256, parameters=None,
     projected2 = project_residuals_to_local(residuals2, assignments2, Rs2, mu2)
 
     logger.info('Fitting subquantizers...')
-    subquantizers1 = train_subquantizers(projected1, M / 2, subquantizer_clusters, kmeans_local_iters, n_init, random_state=random_state, n_jobs=n_jobs)
-    subquantizers2 = train_subquantizers(projected2, M / 2, subquantizer_clusters, kmeans_local_iters, n_init, random_state=random_state, n_jobs=n_jobs)
+    subquantizers1 = train_subquantizers(projected1, int(M / 2), subquantizer_clusters, kmeans_local_iters, n_init, random_state=random_state, n_jobs=n_jobs)
+    subquantizers2 = train_subquantizers(projected2, int(M / 2), subquantizer_clusters, kmeans_local_iters, n_init, random_state=random_state, n_jobs=n_jobs)
     logger.info('Done fitting subquantizers.')
 
     return (C1, C2), (Rs1, Rs2), (mu1, mu2), (subquantizers1, subquantizers2)
@@ -616,7 +616,7 @@ class LOPQModel(object):
             C, R, mu, subC = self.get_split_parameters(split)
 
             # Concatenate the cluster centroids for this split of fine codes
-            sx = functools.reduce(lambda acc, c: np.concatenate((acc, subC[c[0]][c[1]])), enumerate(fc), [])
+            sx = reduce(lambda acc, c: np.concatenate((acc, subC[c[0]][c[1]])), enumerate(fc), [])
 
             # Project residual out of local space
             cluster = coarse_codes[split]
@@ -706,7 +706,7 @@ class LOPQModel(object):
         """
         Export model parameters in protobuf format.
         """
-        from .lopq_model_pb2 import LOPQModelParams
+        from lopq.lopq_model_pb2 import LOPQModelParams
         from itertools import chain
 
         lopq_params = LOPQModelParams()
@@ -747,7 +747,7 @@ class LOPQModel(object):
         """
         Reconstitute a model from parameters stored in protobuf format.
         """
-        from .lopq_model_pb2 import LOPQModelParams
+        from lopq.lopq_model_pb2 import LOPQModelParams
         from .utils import concat_new_first
 
         def halves(arr):
@@ -773,5 +773,5 @@ class LOPQModel(object):
             return LOPQModel(parameters=(Cs, Rs, mus, subs))
 
         except IOError:
-            print(filename + ": Could not open file.")
+            print (filename + ": Could not open file.")
             return None

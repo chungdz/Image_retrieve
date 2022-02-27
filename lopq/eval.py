@@ -29,7 +29,7 @@ def compute_all_neighbors(data1, data2=None, just_nn=True):
     else:
         nns = np.zeros(dists.shape, dtype=int)
 
-    for i in range(dists.shape[0]):
+    for i in np.arange(dists.shape[0]):
         if just_nn:
             nns[i] = np.argmin(dists[i])
         else:
@@ -55,7 +55,7 @@ def get_proportion_nns_with_same_coarse_codes(data, model, nns=None):
 
     # Count the number of NNs that share the same coarse codes
     count = 0
-    for i in range(N):
+    for i in np.arange(N):
         nn = nns[i]
         if coarse_codes[i] == coarse_codes[nn]:
             count += 1
