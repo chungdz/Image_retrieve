@@ -279,7 +279,7 @@ def train_subquantizers(data, num_buckets, subquantizer_clusters=256, kmeans_loc
     subquantizers = list()
     for i, d in enumerate(np.split(data, num_buckets, axis=1)):
         model = KMeans(n_clusters=subquantizer_clusters, init="k-means++", max_iter=kmeans_local_iters,
-                       n_init=n_init, n_jobs=n_jobs, verbose=False, random_state=random_state)
+                       n_init=n_init, verbose=False, random_state=random_state)
         model.fit(d)
         subquantizers.append(model.cluster_centers_)
         logger.info('Fit subquantizer %d of %d.' % (i + 1, num_buckets))
