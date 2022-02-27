@@ -263,7 +263,7 @@ def train_coarse(data, V=8, kmeans_coarse_iters=10, n_init=10, random_state=None
     logger.info('Fitting coarse quantizer...')
 
     # Fit coarse model
-    model = KMeans(n_clusters=V, init="k-means++", max_iter=kmeans_coarse_iters, n_init=n_init, n_jobs=n_jobs, verbose=False, random_state=random_state)
+    model = KMeans(n_clusters=V, init="k-means++", max_iter=kmeans_coarse_iters, n_init=n_init, verbose=False, random_state=random_state)
     model.fit(data)
 
     logger.info('Done fitting coarse quantizer.')
