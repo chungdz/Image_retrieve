@@ -21,7 +21,7 @@ parser.add_argument("--dpath", default="ir", type=str,
 parser.add_argument("--batch_size", default=1024, type=int)
 parser.add_argument("--k", default=20, type=int)
 parser.add_argument("--to_test", default="test.npy", type=str)
-parser.add_argument("--test_matrix", default="test.npy", type=str)
+parser.add_argument("--test_matrix", default="tdatabase.npy", type=str)
 args = parser.parse_args()
 
 dbp = os.path.join(args.dpath, "database.npy")
