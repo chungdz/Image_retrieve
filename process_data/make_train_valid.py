@@ -33,7 +33,7 @@ end_index = fdf.shape[0] - 1
 cdict = collections.defaultdict(set)
 for pic_index, carm_index in fdf.values:
     assert(pic_index not in cdict[carm_index]) 
-    cdict[int(carm_index)].add(int(pic_index))
+    cdict[carm_index].add(pic_index)
 
 train_set = []
 valid_set = []
@@ -79,7 +79,8 @@ np.save(train_path, train_set)
 np.save(valid_path, valid_set)
 np.save(test_path, test_set)
 
-saved_index = {k: list(v) for k, v in cdict.items()}
+saved_index = {int(k): [int(x) for x in v] for k, v in cdict.items()}
 json.dump(saved_index, open(dictionary_path, 'w'))
+
 
 
