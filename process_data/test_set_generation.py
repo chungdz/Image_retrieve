@@ -119,7 +119,7 @@ for l in tqdm(files, total=len(files)):
         #find all index numbers for this model and add them all to dict
         temp = indexset.loc[indexset['Carmodel'] == carmodel_number]
         temp_array = temp['Index'].to_numpy()
-        index_dict[int(l)-1] = temp_array
+        index_dict[carmodel_number] = temp_array
 
 
         #add image into matrix and testset
