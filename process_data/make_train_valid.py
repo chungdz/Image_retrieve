@@ -24,6 +24,8 @@ args = parser.parse_args()
 indexpath = os.path.join(args.dpath, "indexinfo.csv")
 train_path = os.path.join(args.dpath, "train.npy")
 valid_path = os.path.join(args.dpath, "valid.npy")
+test_path = os.path.join(args.dpath, "valid_for_test.npy")
+dictionary_path = os.path.join(args.dpath, "model_num.json")
 
 fdf = pd.read_csv(indexpath)
 end_index = fdf.shape[0] - 1
@@ -35,6 +37,7 @@ for pic_index, carm_index in fdf.values:
 
 train_set = []
 valid_set = []
+test_set = []
 for carm_index, pic_set in tqdm(cdict.items(), total=len(cdict), desc='make train and valid'):
     pic_list = list(pic_set)
     cur_len = len(pic_list)
@@ -63,11 +66,20 @@ for carm_index, pic_set in tqdm(cdict.items(), total=len(cdict), desc='make trai
         new_sample_neg.append(0)
         valid_set.append(new_sample_pos)
         valid_set.append(new_sample_neg)
+    
+    for pidx in valid_list:
+        test_set.append([pidx, carm_index])
 
 train_set = np.array(train_set)
 valid_set = np.array(valid_set)
-print(train_set.shape, valid_set.shape)
+test_set = np.array(test_set)
+print(train_set.shape, valid_set.shape, test_set.shape)
 
 np.save(train_path, train_set)
 np.save(valid_path, valid_set)
+np.save(test_path, test_set)
+
+saved_index = {k: list(v) for k, v in cdict.items()}
+json.dump(saved_index, open(dictionary_path, 'w'))
+
 

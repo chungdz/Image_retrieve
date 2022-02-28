@@ -20,11 +20,13 @@ parser.add_argument("--dpath", default="ir", type=str,
                         help="Path of the output dir.")
 parser.add_argument("--batch_size", default=1024, type=int)
 parser.add_argument("--k", default=20, type=int)
+parser.add_argument("--to_test", default="test.npy", type=str)
+parser.add_argument("--test_matrix", default="test.npy", type=str)
 args = parser.parse_args()
 
 dbp = os.path.join(args.dpath, "database.npy")
-testp = os.path.join(args.dpath, "test.npy")
-imagep = os.path.join(args.dpath, "tdatabase.npy")
+testp = os.path.join(args.dpath, args.to_test)
+imagep = os.path.join(args.dpath, args.test_matrix)
 classp = os.path.join(args.dpath, "model_num.json")
 resp = os.path.join(args.dpath, "mAP.json")
 print('load data')
@@ -35,9 +37,9 @@ testinput = testset[:, 0]
 test_class = testset[:, 1]
 dataset = GeMData(image_matrix, torch.LongTensor(testinput))
 data_loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False, num_workers=8, pin_memory=True)
+db_tensor = torch.FloatTensor(np.load(dbp).T).to(0)
 
 batch_res = []
-db_tensor = torch.FloatTensor(np.load(dbp).T).to(0)
 with torch.no_grad():
     for data in tqdm(data_loader, total=len(data_loader), desc="generate vectors"):
         input_data = data.to(0)

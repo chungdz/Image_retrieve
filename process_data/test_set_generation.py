@@ -132,7 +132,7 @@ for l in tqdm(files, total=len(files)):
 
 np.save(test_image_path, np.array(image_set, dtype = np.uint8))
 np.save(test_set_path, np.array(test_set))
-saved_index = {k: v.tolist() for k, v in index_dict.items()}
-json.dump(saved_index, open(dictionary_path, 'w'))
+# saved_index = {k: v.tolist() for k, v in index_dict.items()}
+# json.dump(saved_index, open(dictionary_path, 'w'))
 print(np.array(image_set, dtype = np.uint8).shape)
 print(np.array(test_set).shape)
