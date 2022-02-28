@@ -31,6 +31,7 @@ model.fit(db, verbose=True, random_state=7)
 # code = model.predict(x)
 
 # Create a searcher to index data with the model
+print('load searcher')
 searcher = LOPQSearcher(model)
 searcher.add_data(db)
 
