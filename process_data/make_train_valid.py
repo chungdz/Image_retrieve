@@ -33,7 +33,7 @@ end_index = fdf.shape[0] - 1
 cdict = collections.defaultdict(set)
 for pic_index, carm_index in fdf.values:
     assert(pic_index not in cdict[carm_index]) 
-    cdict[carm_index].add(int(pic_index))
+    cdict[int(carm_index)].add(int(pic_index))
 
 train_set = []
 valid_set = []
