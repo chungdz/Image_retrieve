@@ -126,7 +126,7 @@ for l in tqdm(files, total=len(files)):
         image_set.append(resized_image)
         temp_set = []
         temp_set.append(index)
-        temp_set.append(int(l)-1)
+        temp_set.append(carmodel_number)
         test_set.append(np.array(temp_set))
         index += 1
 
