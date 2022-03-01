@@ -1,19 +1,11 @@
-from inspect import classify_class_attrs
 import numpy as np
 import json
-import pandas as pd
-from tqdm import trange
 import argparse
-from datasets.config import GeMConfig
-from modules.gem import GeM
-from utils.train_util import set_seed
 from torch.utils.data import DataLoader
 from datasets.dl import GeMData
 import torch
 import os
 from tqdm import tqdm, trange
-import gc
-import torch.nn.functional as F
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dpath", default="ir", type=str,
@@ -22,6 +14,7 @@ parser.add_argument("--batch_size", default=1024, type=int)
 parser.add_argument("--k", default=20, type=int)
 parser.add_argument("--to_test", default="test.npy", type=str)
 parser.add_argument("--test_matrix", default="tdatabase.npy", type=str)
+parser.add_argument("--isValid", default=0, type=int)
 args = parser.parse_args()
 
 dbp = os.path.join(args.dpath, "database.npy")
@@ -36,14 +29,22 @@ testset = np.load(testp)
 testinput = testset[:, 0]
 test_class = testset[:, 1]
 dataset = GeMData(image_matrix, torch.LongTensor(testinput))
-data_loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False, num_workers=8, pin_memory=True)
+data_loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False, num_workers=6, pin_memory=True)
 db_tensor = torch.FloatTensor(np.load(dbp).T).to(0)
+
+if args.isValid == 1:
+    idxset = set(testinput)
+    mask = np.ones((1, image_matrix.size(0)))
+    for i in range(image_matrix.size(0)):
+        if i in idxset:
+            mask[0, i] = 0
+    mask = torch.LongTensor(mask).to(0)
 
 batch_res = []
 with torch.no_grad():
     for data in tqdm(data_loader, total=len(data_loader), desc="generate vectors"):
         input_data = data.to(0)
-        cur_score = torch.matmul(input_data, db_tensor)
+        cur_score = torch.matmul(input_data, db_tensor) * mask
         _, topk = torch.topk(cur_score, args.k, dim=1)
         batch_res.append(topk.cpu().numpy())
 

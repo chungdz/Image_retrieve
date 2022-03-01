@@ -9,9 +9,6 @@ import json
 
 random.seed(7)
 
-radio = 7
-neg_count = 4
-
 parser = argparse.ArgumentParser()
 parser.add_argument("--dpath", default="/mnt/e/data/", type=str,
                         help="Path of the output dir.")
@@ -38,14 +35,14 @@ for pic_index, carm_index in fdf.values:
 train_set = []
 valid_set = []
 test_set = []
-all_vaild = set()
+all_valid = set()
 for carm_index, pic_set in tqdm(cdict.items(), total=len(cdict), desc='make valid index set'):
     pic_list = list(pic_set)
     cur_len = len(pic_list)
     valid_num = cur_len // args.ratio
     valid_list = pic_list[:valid_num]
     for vidx in valid_list:
-        all_vaild.add(vidx)
+        all_valid.add(vidx)
 
 for carm_index, pic_set in tqdm(cdict.items(), total=len(cdict), desc='make train and valid'):
     pic_list = list(pic_set)
@@ -57,10 +54,10 @@ for carm_index, pic_set in tqdm(cdict.items(), total=len(cdict), desc='make trai
     
     for i in range(train_num - 1):
         for j in range(i + 1, train_num):
-            new_sample = [pic_list[i], pic_list[j]]
+            new_sample = [train_list[i], train_list[j]]
             while len(new_sample) < 2 + args.neg_count:
                 neg_idx = random.randint(0, end_index - 1)
-                if neg_idx not in pic_set and neg_idx not in new_sample and neg_idx not in all_vaild:
+                if neg_idx not in pic_set and neg_idx not in new_sample and neg_idx not in all_valid:
                     new_sample.append(neg_idx)
             train_set.append(new_sample)
     
