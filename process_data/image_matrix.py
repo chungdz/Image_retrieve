@@ -139,7 +139,7 @@ def generateImageSet(dataframe, index=None, start=None, end=None, path=None, fil
             impath = path + dataframe["Path"].iloc[image_num]
         if filter_type == "Gaussian":
             resized_image = changeImageShape_Gaussian(impath)
-        elif filter_type == "White":
+        elif filter_type == "SeamCarving":
             print("Wrong Augment")
             #resized_image = changeImageShape(impath)
         else:
