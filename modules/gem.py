@@ -41,7 +41,7 @@ class GeM(nn.Module):
         # print("Load {} pre-trained parameters from pytorch".format(cfg.arch), self.resnet.load_state_dict(state_dict))
         self.neg_count = cfg.neg_count
         self.hidden_size = cfg.hidden_size
-        # self.gem_proj = nn.Linear(self.hidden_size, self.hidden_size)
+        self.gem_proj = nn.Linear(self.hidden_size, self.hidden_size)
         self.p = nn.Parameter(torch.Tensor([3]))
     
     def gem(self, x):
