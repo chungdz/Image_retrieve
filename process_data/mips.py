@@ -29,7 +29,7 @@ testset = np.load(testp)
 testinput = testset[:, 0]
 test_class = testset[:, 1]
 dataset = GeMData(image_matrix, torch.LongTensor(testinput))
-data_loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False, num_workers=8, pin_memory=True)
+data_loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False, num_workers=6, pin_memory=True)
 db_tensor = torch.FloatTensor(np.load(dbp).T).to(0)
 
 if args.isValid == 1:
@@ -37,7 +37,7 @@ if args.isValid == 1:
     mask = np.ones((1, image_matrix.size(0)))
     for i in range(image_matrix.size(0)):
         if i in idxset:
-            mask[1, i] = 0
+            mask[0, i] = 0
     mask = torch.LongTensor(mask).to(0)
 
 batch_res = []
