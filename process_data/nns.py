@@ -12,6 +12,7 @@ parser.add_argument("--dimension", default=64, type=int)
 parser.add_argument("--k", default=20, type=int)
 parser.add_argument("--to_test", default="test.npy", type=str)
 parser.add_argument("--test_matrix", default="tdatabase.npy", type=str)
+parser.add_argument("--isValid", default=0, type=int)
 args = parser.parse_args()
 
 dbp = os.path.join(args.dpath, "database.npy")
@@ -40,8 +41,12 @@ searcher.add_data(db)
 # Retrieve ranked nearest neighbors
 res = []
 for imgidx, imgclass in tqdm(testset):
-    results, visited = searcher.search(testdb[imgidx], quota=args.k)
-    nns = [r.id for r in list(results)]
+    if args.isValid:
+        results, visited = searcher.search(testdb[imgidx], quota=args.k + 1)
+        nns = [r.id for r in list(results)][1:]
+    else:
+        results, visited = searcher.search(testdb[imgidx], quota=args.k)
+        nns = [r.id for r in list(results)]
     res.append(nns)
 
 final_matrix = np.array(res)
