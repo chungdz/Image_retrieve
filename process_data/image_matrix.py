@@ -6,14 +6,14 @@ import os
 import pandas as pd
 from tqdm import tqdm, trange
 #============================================================================#
-#changeImageShape(path)
+#changeImageShape_Gaussian(path)
 #Input: the location of single image: E.g: "F:/Image_data/data/image/"
 #Output: Single image with shape of 224X224X3
 #
 # Image first reshape scale to longer side = 224
 # Full fill empty part with origin part og image after an gaussian filter
 #============================================================================#
-def changeImageShape(path):
+def changeImageShape_Gaussian(path):
     image = None                #clear image variable in case memory use error from imread()
     image  = cv2.imread(path)    
     image1 = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) #convert BGR to RGB
@@ -56,9 +56,57 @@ def changeImageShape(path):
         gaussiand_image_right = cv2.GaussianBlur(resized[0:224,(resized.shape[1]-center_temp):resized.shape[1]],(7,7),1000)
         resized_image[0:224, 0:center_temp] = gaussiand_image_left
         resized_image[0:224, (224-center_temp):224] = gaussiand_image_right
+
+    return resized_image
+
+
+#============================================================================#
+#changeImageShape_black(path)
+#Input: the location of single image: E.g: "F:/Image_data/data/image/"
+#Output: Single image with shape of 224X224X3
+#
+# Image first reshape scale to longer side = 224
+# Leave empty part of image in balck
+#============================================================================#
+def changeImageShape_Black(path):
+    image = None                #clear image variable in case memory use error from imread()
+    image  = cv2.imread(path)    
+    image1 = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) #convert BGR to RGB
+    if image1.shape[1] < image1.shape[0]:
+        scale_percent = image1.shape[0]/224
+        width = round(image1.shape[1] / scale_percent)
+        height = round(image1.shape[0] / scale_percent)
+        
+    else:
+        scale_percent = image1.shape[1]/224
+        width = round(image1.shape[1] / scale_percent)
+        height = round(image1.shape[0] / scale_percent)
+
+    dim = (width, height)
+    resized = cv2.resize(image1, dim, interpolation = cv2.INTER_AREA)
     
+    #create an empty array with size of 224*224*3:
+    resized_image = np.zeros((224,224,3),dtype=np.uint8)
+    
+    #Copy resized image into 300*300*3 matrix
+    if resized.shape[0]<224:
+        center_temp = (224 - resized.shape[0])//2
+        if resized.shape[0]%2:
+            resized_image[center_temp+1:224-center_temp, 0:224] = resized[0:resized.shape[0], 0:224]
+        else:
+            resized_image[center_temp:224-center_temp, 0:224] = resized[0:resized.shape[0], 0:224]
+        
+    else:
+        center_temp = (224 - resized.shape[1])//2
+        if resized.shape[1]%2:
+             resized_image[0:224, center_temp+1:224-center_temp] = resized[0:224, 0:resized.shape[1]]
+        else:
+             resized_image[0:224, center_temp:224-center_temp] = resized[0:224, 0:resized.shape[1]]
+        
     
     return resized_image
+
+
 
 #============================================================================#
 #generateImageSet(dataframe, index, start, end)
@@ -72,7 +120,7 @@ def changeImageShape(path):
 #   imageset:   One big matrix contain all 3X224X224 images
 #   index_df:   dataframe contain image index and correspond car model info
 #============================================================================#
-def generateImageSet(dataframe, index=None, start=None, end=None, path=None):
+def generateImageSet(dataframe, index=None, start=None, end=None, path=None, filter_type = "Gaussian"):
     image_set = []
     index_set = []
     model_set = []
@@ -89,7 +137,14 @@ def generateImageSet(dataframe, index=None, start=None, end=None, path=None):
         impath = dataframe["Path"].iloc[image_num]
         if not path is None:
             impath = path + dataframe["Path"].iloc[image_num]
-        resized_image = changeImageShape(impath)
+        if filter_type == "Gaussian":
+            resized_image = changeImageShape_Gaussian(impath)
+        elif filter_type == "White":
+            print("Wrong Augment")
+            #resized_image = changeImageShape(impath)
+        else:
+            resized_image = changeImageShape_Black(impath)
+
         if resized_image.sum() == 0:
             exit()
         image_set.append(resized_image)
@@ -108,13 +163,18 @@ def generateImageSet(dataframe, index=None, start=None, end=None, path=None):
 parser = argparse.ArgumentParser()
 parser.add_argument("--dpath", default="/mnt/e/data/", type=str,
                         help="Path of the output dir.")
+parser.add_argument("--filter_type", default="Gaussian", type=str,
+                        help="Filter type for empty space of images")
 args = parser.parse_args()
 matrix_path = os.path.join(args.dpath, 'imageset.npy')
 image_index = os.path.join(args.dpath, 'indexinfo.csv')
 front_csv_path = os.path.join(args.dpath, "cat_front.csv")
 img_path = os.path.join(args.dpath, "Image_data/data/image/")
 
-npm, dfm = generateImageSet(pd.read_csv(front_csv_path), path=img_path)
+if args.filter_type == "Gaussian":
+    npm, dfm = generateImageSet(pd.read_csv(front_csv_path), path=img_path)
+elif args.filter_type == "Black":
+    npm, dfm = generateImageSet(pd.read_csv(front_csv_path), path=img_path,filter_type ="Black")
 
 np.save(matrix_path, np.transpose(npm, (0, 3, 1, 2)))
 dfm.to_csv(image_index, index=None)
