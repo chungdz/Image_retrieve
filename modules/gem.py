@@ -69,7 +69,7 @@ class GeM(nn.Module):
         # r = r.reshape(batch_size, self.hidden_size, -1)
         # r = self.gem(r)
         r = torch.tanh(r)
-        outp = self.out_proj(r)
+        outp = self.out_proj_resnet(r)
 
         return outp
     
