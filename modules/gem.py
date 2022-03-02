@@ -40,8 +40,8 @@ class GeM(nn.Module):
     def __init__(self, cfg):
         super(GeM, self).__init__()
         self.resnet = ResNetRaw(cfg.arch)
-        # state_dict = load_state_dict_from_url(model_urls[cfg.arch], progress=cfg.progress)
-        # print("Load {} pre-trained parameters from pytorch".format(cfg.arch), self.resnet.load_state_dict(state_dict))
+        state_dict = load_state_dict_from_url(model_urls[cfg.arch], progress=cfg.progress)
+        print("Load {} pre-trained parameters from pytorch".format(cfg.arch), self.resnet.load_state_dict(state_dict))
         self.neg_count = cfg.neg_count
         self.hidden_size = cfg.hidden_size
         self.gem_proj = nn.Linear(self.hidden_size, self.hidden_size)
