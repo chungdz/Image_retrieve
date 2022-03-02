@@ -50,10 +50,6 @@ for carm_index, pic_set in tqdm(cdict.items(), total=len(cdict), desc='make vali
         all_valid.add(vidx)
 
 for carm_index, pic_set in tqdm(cdict.items(), total=len(cdict), desc='make train and valid'):
-    if len(pic_set) < args.min_len:
-        discarded.append(carm_index)
-        continue
-
     pic_list = list(pic_set)
     cur_len = len(pic_list)
     valid_num = cur_len // args.ratio
@@ -76,6 +72,10 @@ for carm_index, pic_set in tqdm(cdict.items(), total=len(cdict), desc='make trai
                 if neg_idx not in pic_set and neg_idx not in new2 and neg_idx not in all_valid:
                     new2.append(neg_idx)
             train_set_reverse.append(new2)
+    
+    if len(pic_set) < args.min_len:
+        discarded.append(carm_index)
+        continue
     
     pos_sample_valid = random.sample(train_list, valid_num)
     for i in range(valid_num):
