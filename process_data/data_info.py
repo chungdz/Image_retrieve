@@ -31,6 +31,7 @@ path = os.path.join(args.dpath, "Image_data/data/image/")  # image file path
 label_path = os.path.join(args.dpath, "Image_data/data/label/") # label file path
 front_csv_path = os.path.join(args.dpath, "cat_front.csv")
 rear_csv_path = os.path.join(args.dpath, "cat_rear.csv")
+all_csv_path = os.path.join(args.dpath, "car_all.csv")
 print("file path", path)
 files = os.listdir(path)
 
@@ -85,15 +86,19 @@ df_front_all = pd.concat([df_front, df_front_side])
 df_rear = df[df['View Point'] == "2"]
 df_rear_side = df[df['View Point'] == "5"]
 df_rear_all = pd.concat([df_rear, df_rear_side])
-    
+
+df_all = pd.concat([df_front_all, df_rear_all])
+  
 df_front_all.reset_index(inplace=True, drop=True)
 df_rear_all.reset_index(inplace=True, drop=True)
+df_all.reset_index(inplace=True, drop=True)
 
 pd.set_option('display.width', None)
-print(df_front_all.head(5))
-print(df_rear_all.head(5))
+#print(df_front_all.head(5))
+#print(df_rear_all.head(5))
+print(df_all.head(5))
 
-df_front_all.to_csv(front_csv_path, index=None)
-df_rear_all.to_csv(rear_csv_path, index=None)
-
+#df_front_all.to_csv(front_csv_path, index=None)
+#df_rear_all.to_csv(rear_csv_path, index=None)
+df.to_csv(all_csv_path, index=None)
 
