@@ -44,7 +44,10 @@ batch_res = []
 with torch.no_grad():
     for data in tqdm(data_loader, total=len(data_loader), desc="generate vectors"):
         input_data = data.to(0)
-        cur_score = torch.matmul(input_data, db_tensor) * mask
+        if args.isValid:
+            cur_score = torch.matmul(input_data, db_tensor) * mask
+        else:
+            cur_score = torch.matmul(input_data, db_tensor)
         _, topk = torch.topk(cur_score, args.k, dim=1)
         batch_res.append(topk.cpu().numpy())
 
