@@ -42,6 +42,7 @@ class GeM(nn.Module):
         self.neg_count = cfg.neg_count
         self.hidden_size = cfg.hidden_size
         self.gem_proj = nn.Linear(self.hidden_size, self.hidden_size)
+        self.out_proj = nn.Linear(self.hidden_size, len(cfg.cm))
         self.p = nn.Parameter(torch.Tensor([3]))
     
     def gem(self, x):
@@ -53,42 +54,15 @@ class GeM(nn.Module):
         return gem / gem_size
         # return gem
     
-    def forward(self, data, l, valid_mode=False):
-        '''
-        data for train is like
-        torch.Size([32, 6, 3, 224, 224])
-        r1 after resnet is like
-        torch.Size([32, 512, 7, 7])
-        r1 after gem is like
-        torch.Size([32, 512])
-        r1 after repeating is like
-        torch.Size([32, 5, 512])
-
-        data for valid is like
-        torch.Size([32, 301056])
-        torch.Size([32, 2, 3, 224, 224])
-        '''
-        if valid_mode:
-            negc = 0
-        else:
-            negc = self.neg_count
-        
+    def forward(self, data, l):
         batch_size = data.size(0)
-        data = data.reshape(batch_size, 2 + negc, 3, l, l)
+        r = data.reshape(batch_size, 3, l, l)
+        r = self.resnet(r)
+        r = r.reshape(batch_size, self.hidden_size, -1)
+        r = self.gem(r)
+        outp = self.out_proj(r)
 
-        r1 = data[:, 0].reshape(batch_size, 3, l, l)
-        r1 = self.resnet(r1)
-        r1 = r1.reshape(batch_size, self.hidden_size, -1)
-        r1 = self.gem(r1)
-        r1 = r1.repeat(1, negc + 1).view(batch_size, negc + 1, self.hidden_size)
-
-        r2 = data[:, 1:].reshape(batch_size * (negc + 1), 3, l, l)
-        r2 = self.resnet(r2)
-        r2 = r2.reshape(batch_size, negc + 1, self.hidden_size, -1)
-        r2 = self.gem(r2)
-        r2 = r2.reshape(batch_size, negc + 1, self.hidden_size)
-
-        return torch.sum(r1 * r2, dim=-1)
+        return outp
     
     def predict(self, data, l):
         batch_size = data.size(0)
