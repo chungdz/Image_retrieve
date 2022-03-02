@@ -13,9 +13,12 @@ class ResNetRaw(ResNet):
         if arch == 'resnet18':
             b = BasicBlock
             layers = [2, 2, 2, 2]
-        else:
+        elif arch == 'resnet50':
             b = Bottleneck
             layers = [3, 4, 6, 3]
+        else:
+            b = Bottleneck
+            layers = [3, 4, 23, 3]
         super(ResNetRaw, self).__init__(b, layers, num_classes=1000)
     
     def forward(self, x):
@@ -60,6 +63,7 @@ class GeM(nn.Module):
         r = self.resnet(r)
         r = r.reshape(batch_size, self.hidden_size, -1)
         r = self.gem(r)
+        r = F.tanh(r)
         outp = self.out_proj(r)
 
         return outp
