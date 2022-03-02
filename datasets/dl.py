@@ -22,15 +22,16 @@ class FNNData(Dataset):
         return self.dataset.shape[0]
 
 class GeMData(Dataset):
-    def __init__(self, pm, ds):
+    def __init__(self, pm, ds, isTest=False):
         '''
         change in matrix to matrix path when really do it
         '''
         self.pic_matrix = pm
         self.dataset = ds
+        self.isTest = isTest
 
-    def __getitem__(self, index, isTest=False):
-        if isTest:
+    def __getitem__(self, index):
+        if self.isTest:
             return self.pic_matrix[self.dataset[index]]
 
         img = self.pic_matrix[self.dataset[index][0]].reshape(-1)
