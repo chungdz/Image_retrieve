@@ -31,7 +31,7 @@ end_index = fdf.shape[0] - 1
 cdict = collections.defaultdict(set)
 cmdict = {}
 cmidx = 0
-for pic_index, carm_index in fdf.values:
+for pic_index, carm_index in fdf.values.tolist():
     assert(pic_index not in cdict[carm_index]) 
     cdict[carm_index].add(pic_index)
     if carm_index not in cmdict:
