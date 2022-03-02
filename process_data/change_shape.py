@@ -53,7 +53,7 @@ def changeImageShape(path, res=224, numChannels=3, filter_type='Gaussian', sigma
             resized_image[center_temp:res-center_temp, 0:res] = resized[0:resized.shape[0], 0:res]
         
         if center_temp > resized.shape[0]:
-            return np.reshape(resized_image, (3,224,224))
+            return np.reshape(resized_image, (res,res,numChannels))
         #Fill out blank part of image
         filterd_part_top = image_filter(resized[0:center_temp, 0:res], filter_size, sigma, filter_type)
         filterd_part_bottom = image_filter(resized[(resized.shape[0]-center_temp):resized.shape[0], 0:res], filter_size, sigma, filter_type)
@@ -68,7 +68,7 @@ def changeImageShape(path, res=224, numChannels=3, filter_type='Gaussian', sigma
              resized_image[0:res, center_temp:res-center_temp] = resized[0:res, 0:resized.shape[1]]
         
         if center_temp > resized.shape[1]:
-            return np.reshape(resized_image, (3,224,224))
+            return np.reshape(resized_image, (res,res,numChannels))
         #Fill out blank part of image
         filterd_part_left = image_filter(resized[0:res, 0:center_temp], filter_size, sigma, filter_type)
         filterd_part_right = image_filter(resized[0:res,(resized.shape[1]-center_temp):resized.shape[1]], filter_size, sigma, filter_type)
