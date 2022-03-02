@@ -22,21 +22,20 @@ class FNNData(Dataset):
         return self.dataset.shape[0]
 
 class GeMData(Dataset):
-    def __init__(self, pm, ds, isValid=False):
+    def __init__(self, pm, ds):
         '''
         change in matrix to matrix path when really do it
         '''
         self.pic_matrix = pm
         self.dataset = ds
-        self.isValid = isValid
 
-    def __getitem__(self, index):
-        if self.isValid:
-            img = self.pic_matrix[self.dataset[index][:2]].reshape(-1)
-            label = self.dataset[index][2].reshape(-1)
-            return torch.cat([img, label], dim=-1)
-        
-        return self.pic_matrix[self.dataset[index]]
+    def __getitem__(self, index, isTest=False):
+        if isTest:
+            return self.pic_matrix[self.dataset[index]]
+
+        img = self.pic_matrix[self.dataset[index][0]].reshape(-1)
+        label = self.dataset[index][1].reshape(-1)
+        return torch.cat([img, label], dim=-1)
  
     def __len__(self):
         return self.dataset.shape[0]

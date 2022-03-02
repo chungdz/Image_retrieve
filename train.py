@@ -58,14 +58,14 @@ def train(cfg, epoch, model, loader, optimizer, steps_one_epoch):
     model.zero_grad()
     enum_dataloader = tqdm(enumerate(loader), total=len(loader), desc="EP-{} train".format(epoch))
     mean_loss = 0
-    input_label = torch.zeros((cfg.batch_size), dtype=torch.long).to(0)
     loss_list = []
     for index, data in enum_dataloader:
         # 1. Forward
-        data = data / 255.0
         data = data.to(0)
-        pred = model(data, 224)
-        loss = F.cross_entropy(pred, input_label[:data.size(0)])
+        input_data = data[:, :-1] / 255.0
+        label_data = data[:, -1]
+        pred = model(input_data, 224)
+        loss = F.cross_entropy(pred, label_data)
 
         # 3.Backward.
         loss.backward()
@@ -98,15 +98,19 @@ def validate(cfg, model, valid_data_loader):
             input_data = data[:, :-1] / 255.0
             label_data = data[:, -1]
             input_data = input_data.to(0)
-            res = model(input_data, 224, valid_mode=True)
+            res = model(input_data, 224)
             labels += label_data.cpu().numpy().tolist()
             preds += res.cpu().numpy().tolist()
     print('running score')
+    labels = np.array(labels)
+    label_one_hot = np.zeros((labels.shape[0], len(cfg.model_info.cm)))
+    label_one_hot[np.arange(labels.shape[0]), labels] = 1
     score = roc_auc_score(labels, preds)
-    fpr, tpr, threshold = roc_curve(labels, preds, pos_label=1)
-    fnr = 1 - tpr
-    eer = fpr[np.nanargmin(np.absolute((fnr - fpr)))]
-    print("AUC:", score, "EER:", eer)
+    # fpr, tpr, threshold = roc_curve(labels, preds, pos_label=1)
+    # fnr = 1 - tpr
+    # eer = fpr[np.nanargmin(np.absolute((fnr - fpr)))]
+    # print("AUC:", score, "EER:", eer)
+    print("AUC:", score)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dpath", default="/mnt/e/data/", type=str,
@@ -125,14 +129,21 @@ matrixp = os.path.join(args.dpath, "imageset.npy")
 trainsetp = os.path.join(args.dpath, "train.npy")
 validsetp = os.path.join(args.dpath, "valid.npy")
 
-args.model_info = GeMConfig()
+args.model_info = GeMConfig(args.dpath)
 args.model_info.arch = args.arch
 pmatrix = torch.ByteTensor(np.load(matrixp))
-trainset = torch.LongTensor(np.load(trainsetp))
-validset = torch.LongTensor(np.load(validsetp))
+
+trainnp = np.load(trainsetp)
+for i in range(trainnp.shape[0]):
+    trainnp[i, 1] = args.model_info.cm[str(trainnp[i, 1])]
+trainset = torch.LongTensor(trainnp)
+validnp = np.load(validsetp)
+for i in range(validnp.shape[0]):
+    validnp[i, 1] = args.model_info.cm[str(validnp[i, 1])]
+validset = torch.LongTensor()
 
 train_dataset = GeMData(pmatrix, trainset)
-valid_dataset = GeMData(pmatrix, validset, isValid=True)
+valid_dataset = GeMData(pmatrix, validset)
 run(args, train_dataset, valid_dataset)
 
 
