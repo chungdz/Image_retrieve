@@ -49,7 +49,7 @@ def run(cfg, train_dataset, valid_dataset):
         if epoch <= cfg.start_epoch:
             steplr.step()
             continue
-        # train(cfg, epoch, model, train_data_loader, optimizer, steps_one_epoch)
+        train(cfg, epoch, model, train_data_loader, optimizer, steps_one_epoch)
         validate(cfg, model, valid_data_loader)
         steplr.step()
 
@@ -100,11 +100,17 @@ def validate(cfg, model, valid_data_loader):
             input_data = input_data.to(0)
             res = model(input_data, 224)
             labels += label_data.cpu().numpy().tolist()
-            preds.append(res.cpu().numpy())
+            _, top1 = torch.topk(res, 1, dim=1)
+            preds += top1.reshape(-1).cpu().numpy().tolist()
     print('running score')
-    final_preds = np.concatenate(preds, axis=0)
-    print(final_preds.shape, labels)
-    score = roc_auc_score(labels, final_preds)
+    assert(len(labels) == len(preds))
+    cmp = []
+    for i in range(len(labels)):
+        if labels[i] == preds[i]:
+            cmp.append(1)
+        else:
+            cmp.append(0)
+    score = sum(cmp) / len(cmp)
     # fpr, tpr, threshold = roc_curve(labels, preds, pos_label=1)
     # fnr = 1 - tpr
     # eer = fpr[np.nanargmin(np.absolute((fnr - fpr)))]
