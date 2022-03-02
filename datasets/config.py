@@ -18,7 +18,7 @@ class GeMConfig():
         self.neg_count = 4
         self.hidden_size = 512
         self.progress = True
-        self.cm = json.load(os.path.join(dpath, "cm.json"))
+        self.cm = json.load(open(os.path.join(dpath, "cm.json"), 'r'))
 
 
 
