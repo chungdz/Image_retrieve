@@ -5,106 +5,7 @@ import argparse
 import os
 import pandas as pd
 from tqdm import tqdm, trange
-#============================================================================#
-#changeImageShape_Gaussian(path)
-#Input: the location of single image: E.g: "F:/Image_data/data/image/"
-#Output: Single image with shape of 224X224X3
-#
-# Image first reshape scale to longer side = 224
-# Full fill empty part with origin part og image after an gaussian filter
-#============================================================================#
-def changeImageShape_Gaussian(path):
-    image = None                #clear image variable in case memory use error from imread()
-    image  = cv2.imread(path)    
-    image1 = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) #convert BGR to RGB
-    if image1.shape[1] < image1.shape[0]:
-        scale_percent = image1.shape[0]/224
-        width = round(image1.shape[1] / scale_percent)
-        height = round(image1.shape[0] / scale_percent)
-        
-    else:
-        scale_percent = image1.shape[1]/224
-        width = round(image1.shape[1] / scale_percent)
-        height = round(image1.shape[0] / scale_percent)
-
-    dim = (width, height)
-    resized = cv2.resize(image1, dim, interpolation = cv2.INTER_AREA)
-    
-    #create an empty array with size of 224*224*3:
-    resized_image = np.zeros((224,224,3),dtype=np.uint8)
-    
-    #Copy resized image into 300*300*3 matrix
-    if resized.shape[0]<224:
-        center_temp = (224 - resized.shape[0])//2
-        if resized.shape[0]%2:
-            resized_image[center_temp+1:224-center_temp, 0:224] = resized[0:resized.shape[0], 0:224]
-        else:
-            resized_image[center_temp:224-center_temp, 0:224] = resized[0:resized.shape[0], 0:224]
-        #Fill out blank part of image
-        gaussiand_image_top = cv2.GaussianBlur(resized[0:center_temp, 0:224],(7,7),1000)
-        gaussiand_image_bottom = cv2.GaussianBlur(resized[(resized.shape[0]-center_temp):resized.shape[0], 0:224],(7,7),1000)
-        resized_image[0:center_temp, 0:224] = gaussiand_image_top
-        resized_image[(224-center_temp):224, 0:224] = gaussiand_image_bottom
-    else:
-        center_temp = (224 - resized.shape[1])//2
-        if resized.shape[1]%2:
-             resized_image[0:224, center_temp+1:224-center_temp] = resized[0:224, 0:resized.shape[1]]
-        else:
-             resized_image[0:224, center_temp:224-center_temp] = resized[0:224, 0:resized.shape[1]]
-        #Fill out blank part of image
-        gaussiand_image_left = cv2.GaussianBlur(resized[0:224, 0:center_temp],(7,7),1000)
-        gaussiand_image_right = cv2.GaussianBlur(resized[0:224,(resized.shape[1]-center_temp):resized.shape[1]],(7,7),1000)
-        resized_image[0:224, 0:center_temp] = gaussiand_image_left
-        resized_image[0:224, (224-center_temp):224] = gaussiand_image_right
-
-    return resized_image
-
-
-#============================================================================#
-#changeImageShape_black(path)
-#Input: the location of single image: E.g: "F:/Image_data/data/image/"
-#Output: Single image with shape of 224X224X3
-#
-# Image first reshape scale to longer side = 224
-# Leave empty part of image in balck
-#============================================================================#
-def changeImageShape_Black(path):
-    image = None                #clear image variable in case memory use error from imread()
-    image  = cv2.imread(path)    
-    image1 = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) #convert BGR to RGB
-    if image1.shape[1] < image1.shape[0]:
-        scale_percent = image1.shape[0]/224
-        width = round(image1.shape[1] / scale_percent)
-        height = round(image1.shape[0] / scale_percent)
-        
-    else:
-        scale_percent = image1.shape[1]/224
-        width = round(image1.shape[1] / scale_percent)
-        height = round(image1.shape[0] / scale_percent)
-
-    dim = (width, height)
-    resized = cv2.resize(image1, dim, interpolation = cv2.INTER_AREA)
-    
-    #create an empty array with size of 224*224*3:
-    resized_image = np.zeros((224,224,3),dtype=np.uint8)
-    
-    #Copy resized image into 300*300*3 matrix
-    if resized.shape[0]<224:
-        center_temp = (224 - resized.shape[0])//2
-        if resized.shape[0]%2:
-            resized_image[center_temp+1:224-center_temp, 0:224] = resized[0:resized.shape[0], 0:224]
-        else:
-            resized_image[center_temp:224-center_temp, 0:224] = resized[0:resized.shape[0], 0:224]
-        
-    else:
-        center_temp = (224 - resized.shape[1])//2
-        if resized.shape[1]%2:
-             resized_image[0:224, center_temp+1:224-center_temp] = resized[0:224, 0:resized.shape[1]]
-        else:
-             resized_image[0:224, center_temp:224-center_temp] = resized[0:224, 0:resized.shape[1]]
-        
-    
-    return resized_image
+from process_data.change_shape import changeImageShape
 
 
 
@@ -137,14 +38,7 @@ def generateImageSet(dataframe, index=None, start=None, end=None, path=None, fil
         impath = dataframe["Path"].iloc[image_num]
         if not path is None:
             impath = path + dataframe["Path"].iloc[image_num]
-        if filter_type == "Gaussian":
-            resized_image = changeImageShape_Gaussian(impath)
-        elif filter_type == "SeamCarving":
-            print("Wrong Augment")
-            #resized_image = changeImageShape(impath)
-        else:
-            resized_image = changeImageShape_Black(impath)
-
+        resized_image = changeImageShape(impath, res=224, numChannels=3, filter_type, sigma=1000, filter_size=7)
         if resized_image.sum() == 0:
             exit()
         image_set.append(resized_image)
