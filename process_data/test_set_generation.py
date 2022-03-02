@@ -15,6 +15,13 @@ from process_data.change_shape import changeImageShape
 parser = argparse.ArgumentParser()
 parser.add_argument("--dpath", default="/mnt/e/data/", type=str,
                         help="Path of the output dir.")
+parser.add_argument("--filter_type", default="Gaussian", type=str,
+                        help="Filter type for empty space of images")
+parser.add_argument("--image_resolution", default=224, type=int,
+                        help="resized image resolution: e.g: 224")
+parser.add_argument("--numChannels", default=3, type=int,
+                        help="number of channels for images. e.g: 3")
+
 args = parser.parse_args()
 path = os.path.join(args.dpath, "Image_data/sv_data/image/")  # image file path
 print("file path", path)
@@ -43,7 +50,7 @@ for l in tqdm(files, total=len(files)):
         
         #Resize_testset_image
         
-        resized_image = resized_image = changeImageShape(impath, res=224, numChannels=3, filter_type, sigma=1000, filter_size=7)
+        resized_image = resized_image = changeImageShape(path, filter_type=args.filter_type, res=args.image_resolution, numChannels=args.numChannels, sigma=1000, filter_size=7)
         if resized_image.sum() == 0:
             exit()
         
