@@ -23,14 +23,22 @@ train_path = os.path.join(args.dpath, "train.npy")
 valid_path = os.path.join(args.dpath, "valid.npy")
 test_path = os.path.join(args.dpath, "valid_for_test.npy")
 dictionary_path = os.path.join(args.dpath, "model_num.json")
+cm_path = os.path.join(args.dpath, "cm.json")
 
 fdf = pd.read_csv(indexpath)
 end_index = fdf.shape[0] - 1
 
 cdict = collections.defaultdict(set)
+cmdict = {}
+cmidx = 0
 for pic_index, carm_index in fdf.values:
     assert(pic_index not in cdict[carm_index]) 
     cdict[carm_index].add(pic_index)
+    if carm_index not in cmdict:
+        cmdict[carm_index] = cmidx
+        cmidx += 1
+
+print(len(cmdict), cmidx)
 
 train_set = []
 valid_set = []
@@ -87,6 +95,8 @@ np.save(test_path, test_set)
 
 saved_index = {int(k): [int(x) for x in v] for k, v in cdict.items()}
 json.dump(saved_index, open(dictionary_path, 'w'))
+json.dump(cmdict, open(cm_path, 'w'))
+
 
 
 

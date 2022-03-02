@@ -13,11 +13,13 @@ class ModelConfig():
         self.dropout = 0.5
 
 class GeMConfig():
-    def __init__(self):
+    def __init__(self, dpath):
 
         self.neg_count = 4
         self.hidden_size = 512
         self.progress = True
+        self.cm = json.load(os.path.join(dpath, "cm.json"))
+
 
 
 
