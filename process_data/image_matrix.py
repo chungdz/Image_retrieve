@@ -166,17 +166,18 @@ parser.add_argument("--dpath", default="/mnt/e/data/", type=str,
 parser.add_argument("--filter_type", default="Gaussian", type=str,
                         help="Filter type for empty space of images")
 args = parser.parse_args()
-matrix_path = os.path.join(args.dpath, 'imageset.npy')
+matrix_path = os.path.join(args.dpath, 'imageset.npz')
 image_index = os.path.join(args.dpath, 'indexinfo.csv')
 front_csv_path = os.path.join(args.dpath, "cat_front.csv")
+allcar_csv_path = os.path.join(args.dpath, "car_all.csv")
 img_path = os.path.join(args.dpath, "Image_data/data/image/")
 
 if args.filter_type == "Gaussian":
-    npm, dfm = generateImageSet(pd.read_csv(front_csv_path), path=img_path)
+    npm, dfm = generateImageSet(pd.read_csv(allcar_csv_path), path=img_path)
 elif args.filter_type == "Black":
     npm, dfm = generateImageSet(pd.read_csv(front_csv_path), path=img_path,filter_type ="Black")
 
-np.save(matrix_path, np.transpose(npm, (0, 3, 1, 2)))
+np.savez_compressed(matrix_path, np.transpose(npm, (0, 3, 1, 2)))
 dfm.to_csv(image_index, index=None)
 
 
