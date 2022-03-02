@@ -20,6 +20,7 @@ args = parser.parse_args()
 
 indexpath = os.path.join(args.dpath, "indexinfo.csv")
 train_path = os.path.join(args.dpath, "train.npy")
+train_path2 = os.path.join(args.dpath, "train2.npy")
 valid_path = os.path.join(args.dpath, "valid.npy")
 test_path = os.path.join(args.dpath, "valid_for_test.npy")
 dictionary_path = os.path.join(args.dpath, "model_num.json")
@@ -33,6 +34,7 @@ for pic_index, carm_index in fdf.values:
     cdict[carm_index].add(pic_index)
 
 train_set = []
+train_set_reverse = []
 valid_set = []
 test_set = []
 all_valid = set()
@@ -60,6 +62,13 @@ for carm_index, pic_set in tqdm(cdict.items(), total=len(cdict), desc='make trai
                 if neg_idx not in pic_set and neg_idx not in new_sample and neg_idx not in all_valid:
                     new_sample.append(neg_idx)
             train_set.append(new_sample)
+
+            new2 = [train_list[j], train_list[i]]
+            while len(new2) < 2 + args.neg_count:
+                neg_idx = random.randint(0, end_index - 1)
+                if neg_idx not in pic_set and neg_idx not in new2 and neg_idx not in all_valid:
+                    new2.append(neg_idx)
+            train_set_reverse.append(new2)
     
     pos_sample_valid = random.sample(train_list, valid_num)
     for i in range(valid_num):
@@ -77,11 +86,13 @@ for carm_index, pic_set in tqdm(cdict.items(), total=len(cdict), desc='make trai
         test_set.append([pidx, carm_index])
 
 train_set = np.array(train_set)
+train_set_reverse = np.array(train_set_reverse)
 valid_set = np.array(valid_set)
 test_set = np.array(test_set)
-print(train_set.shape, valid_set.shape, test_set.shape)
+print(train_set.shape, train_set_reverse.shape, valid_set.shape, test_set.shape)
 
 np.save(train_path, train_set)
+np.save(train_path2, train_set_reverse)
 np.save(valid_path, valid_set)
 np.save(test_path, test_set)
 
