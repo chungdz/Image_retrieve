@@ -99,11 +99,9 @@ def validate(cfg, model, valid_data_loader):
             label_data = data[:, -1]
             input_data = input_data.to(0)
             res = model(input_data, 224)
-            print(res.size())
             labels += label_data.cpu().numpy().tolist()
             preds.append(res.cpu().numpy())
     print('running score')
-    print(len(preds))
     final_preds = np.concatenate(preds, axis=0)
     print(final_preds.shape, labels)
     score = roc_auc_score(labels, final_preds)
@@ -141,7 +139,7 @@ trainset = torch.LongTensor(trainnp)
 validnp = np.load(validsetp)
 for i in range(validnp.shape[0]):
     validnp[i, 1] = args.model_info.cm[str(validnp[i, 1])]
-validset = torch.LongTensor()
+validset = torch.LongTensor(validnp)
 
 train_dataset = GeMData(pmatrix, trainset)
 valid_dataset = GeMData(pmatrix, validset)
