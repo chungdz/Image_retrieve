@@ -74,7 +74,7 @@ for carm_index, pic_set in tqdm(cdict.items(), total=len(cdict), desc='make trai
             train_set_reverse.append(new2)
     
     if len(pic_set) < args.min_len:
-        discarded.append(carm_index)
+        discarded.append(int(carm_index))
         continue
     
     pos_sample_valid = random.sample(train_list, valid_num)
