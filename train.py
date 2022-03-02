@@ -102,11 +102,9 @@ def validate(cfg, model, valid_data_loader):
             labels += label_data.cpu().numpy().tolist()
             preds.append(res.cpu().numpy())
     print('running score')
-    label_one_hot = np.zeros((len(labels), len(cfg.model_info.cm)))
-    for i in range(len(labels)):
-        label_one_hot[i, labels[i]] = 1
+    print(len(preds))
     final_preds = np.concatenate(preds, axis=0)
-    print(final_preds.shape, label_one_hot.shape)
+    print(final_preds.shape, labels)
     score = roc_auc_score(labels, final_preds)
     # fpr, tpr, threshold = roc_curve(labels, preds, pos_label=1)
     # fnr = 1 - tpr
