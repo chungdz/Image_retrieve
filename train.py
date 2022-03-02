@@ -49,7 +49,7 @@ def run(cfg, train_dataset, valid_dataset):
         if epoch <= cfg.start_epoch:
             steplr.step()
             continue
-        train(cfg, epoch, model, train_data_loader, optimizer, steps_one_epoch)
+        # train(cfg, epoch, model, train_data_loader, optimizer, steps_one_epoch)
         validate(cfg, model, valid_data_loader)
         steplr.step()
 
@@ -99,6 +99,7 @@ def validate(cfg, model, valid_data_loader):
             label_data = data[:, -1]
             input_data = input_data.to(0)
             res = model(input_data, 224)
+            print(res.size())
             labels += label_data.cpu().numpy().tolist()
             preds.append(res.cpu().numpy())
     print('running score')
