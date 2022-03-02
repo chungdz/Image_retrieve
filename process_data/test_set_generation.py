@@ -50,7 +50,7 @@ for l in tqdm(files, total=len(files)):
         
         #Resize_testset_image
         
-        resized_image = resized_image = changeImageShape(path, filter_type=args.filter_type, res=args.image_resolution, numChannels=args.numChannels, sigma=1000, filter_size=7)
+        resized_image = resized_image = changeImageShape(path_temp, filter_type=args.filter_type, res=args.image_resolution, numChannels=args.numChannels, sigma=1000, filter_size=7)
         if resized_image.sum() == 0:
             exit()
         
