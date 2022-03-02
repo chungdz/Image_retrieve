@@ -32,10 +32,11 @@ def run(cfg, train_dataset, valid_dataset):
 
     # Build model.
     model = GeM(cfg.model_info)
+    # for continuous model training
+    if cfg.start_epoch != -1:
+        pretrained_model = torch.load(os.path.join(cfg.save_path, "model.ep{}".format(cfg.start_epoch)), map_location='cpu')
+        print(model.load_state_dict(pretrained_model, strict=False))
     model.to(0)
-    # for bug fixing
-    # pretrained_model = torch.load('ir/para/model.ep0', map_location='cpu')
-    # print(model.load_state_dict(pretrained_model, strict=False))
     # Build optimizer.
     steps_one_epoch = len(train_data_loader)
     train_steps = cfg.epoch * steps_one_epoch
@@ -45,9 +46,9 @@ def run(cfg, train_dataset, valid_dataset):
     # Training and validation
     for epoch in range(cfg.epoch):
         print("lr in this epoch:", steplr.get_last_lr())
-        # if epoch == 0:
-        #     steplr.step()
-        #     continue
+        if epoch <= cfg.start_epoch:
+            steplr.step()
+            continue
         train(cfg, epoch, model, train_data_loader, optimizer, steps_one_epoch)
         validate(cfg, model, valid_data_loader)
         steplr.step()
@@ -117,6 +118,7 @@ parser.add_argument("--save_path", default='para', type=str)
 parser.add_argument("--arch", default='resnet18', type=str)
 parser.add_argument("--show_batch", default=1000, type=int)
 parser.add_argument("--lr_shrink", default=0.9, type=float)
+parser.add_argument("--start_epoch", default=-1, type=int)
 args = parser.parse_args()
 print('load data')
 matrixp = os.path.join(args.dpath, "imageset.npy")

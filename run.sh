@@ -17,7 +17,7 @@ python -m process_data.mips --dpath=ir --batch_size=1024 --k=20
 python -m process_data.mips --dpath=ir --batch_size=1024 --k=20 --isValid=1 --to_test=valid_for_test.npy --test_matrix=database.npy
 # Or LOPQ
 python -m process_data.nns --dpath=ir --dimension=32 --k=20
-python -m process_data.nns --dpath=ir --dimension=32 --k=20 --to_test=valid_for_test.npy --test_matrix=database.npy
+python -m process_data.nns --dpath=ir --dimension=32 --k=20 --isValid=1 --to_test=valid_for_test.npy --test_matrix=database.npy
 
 
 
