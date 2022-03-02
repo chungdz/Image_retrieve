@@ -105,7 +105,6 @@ def validate(cfg, model, valid_data_loader):
     label_one_hot = np.zeros((len(labels), len(cfg.model_info.cm)))
     for i in range(len(labels)):
         label_one_hot[labels[i]] = 1
-    label_one_hot[np.arange(labels.shape[0]), labels] = 1
     score = roc_auc_score(labels, preds)
     # fpr, tpr, threshold = roc_curve(labels, preds, pos_label=1)
     # fnr = 1 - tpr
