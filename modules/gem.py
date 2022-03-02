@@ -33,9 +33,9 @@ class ResNetRaw(ResNet):
         x = self.layer3(x)
         x = self.layer4(x)
         # original have
-        x = self.avgpool(x)
-        x = torch.flatten(x, 1)
-        x = self.fc(x)
+        # x = self.avgpool(x)
+        # x = torch.flatten(x, 1)
+        # x = self.fc(x)
 
         return x
 
@@ -50,7 +50,7 @@ class GeM(nn.Module):
         self.hidden_size = cfg.hidden_size
         self.gem_proj = nn.Linear(self.hidden_size, self.hidden_size)
         self.out_proj = nn.Linear(self.hidden_size, len(cfg.cm))
-        self.out_proj_resnet = nn.Linear(1000, len(cfg.cm))
+        # self.out_proj_resnet = nn.Linear(1000, len(cfg.cm))
         self.p = nn.Parameter(torch.Tensor([3]))
     
     def gem(self, x):
@@ -66,10 +66,10 @@ class GeM(nn.Module):
         batch_size = data.size(0)
         r = data.reshape(batch_size, 3, l, l)
         r = self.resnet(r)
-        # r = r.reshape(batch_size, self.hidden_size, -1)
-        # r = self.gem(r)
+        r = r.reshape(batch_size, self.hidden_size, -1)
+        r = self.gem(r)
         r = torch.tanh(r)
-        outp = self.out_proj_resnet(r)
+        outp = self.out_proj(r)
 
         return outp
     
