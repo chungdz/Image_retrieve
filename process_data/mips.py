@@ -27,7 +27,7 @@ print('load data')
 md = json.load(open(classp, "r"))
 m2 = np.load(mask2p)
 image_matrix = torch.FloatTensor(np.load(imagep))
-testset = np.load(testp)
+testset = torch.LongTensor(np.load(testp)).to(0)
 testinput = testset[:, 0]
 test_class = testset[:, 1]
 dataset = GeMData(image_matrix, torch.LongTensor(testinput))
