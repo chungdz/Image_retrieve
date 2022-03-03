@@ -17,13 +17,15 @@ parser.add_argument("--test_matrix", default="tdatabase.npy", type=str)
 parser.add_argument("--isValid", default=0, type=int)
 args = parser.parse_args()
 
-dbp = os.path.join(args.dpath, "database_masked.npy")
+dbp = os.path.join(args.dpath, "database.npy")
 testp = os.path.join(args.dpath, args.to_test)
 imagep = os.path.join(args.dpath, args.test_matrix)
 classp = os.path.join(args.dpath, "model_num.json")
-resp = os.path.join(args.dpath, "dbcm.json")
+resp = os.path.join(args.dpath, "mAP.json")
+mask2p = os.path.join(args.dpath, "mask2.npy")
 print('load data')
 md = json.load(open(classp, "r"))
+m2 = np.load(mask2p)
 image_matrix = torch.FloatTensor(np.load(imagep))
 testset = np.load(testp)
 testinput = testset[:, 0]
@@ -45,9 +47,9 @@ with torch.no_grad():
     for data in tqdm(data_loader, total=len(data_loader), desc="generate vectors"):
         input_data = data.to(0)
         if args.isValid:
-            cur_score = torch.matmul(input_data, db_tensor) * mask
+            cur_score = torch.matmul(input_data, db_tensor) * mask * m2
         else:
-            cur_score = torch.matmul(input_data, db_tensor)
+            cur_score = torch.matmul(input_data, db_tensor) * m2
         _, topk = torch.topk(cur_score, args.k, dim=1)
         batch_res.append(topk.cpu().numpy())
 
@@ -57,10 +59,10 @@ print(final_matrix.shape)
 labeled = np.zeros(final_matrix.shape)
 mAP_list = []
 for i in tqdm(range(final_matrix.shape[0]), desc='map to binary and calculate mAP'):
-    # cur_s = set(md[str(test_class[i])])
+    cur_s = set(md[str(test_class[i])])
     plist = []
     for j in range(final_matrix.shape[1]):
-        labeled[i, j] = int(md[final_matrix[i][j]] == int(test_class[i]))
+        labeled[i, j] = int(final_matrix[i][j] in cur_s)
         if labeled[i, j] == 1:
             plist.append(labeled[i, :j + 1].sum() / (j + 1))
 
