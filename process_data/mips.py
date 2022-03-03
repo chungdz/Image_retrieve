@@ -58,6 +58,7 @@ print(final_matrix.shape)
 
 labeled = np.zeros(final_matrix.shape)
 mAP_list = []
+sum_list = []
 for i in tqdm(range(final_matrix.shape[0]), desc='map to binary and calculate mAP'):
     cur_s = set(md[str(test_class[i])])
     plist = []
@@ -70,11 +71,12 @@ for i in tqdm(range(final_matrix.shape[0]), desc='map to binary and calculate mA
         mAP_list.append(sum(plist) / len(plist))
     else:
         mAP_list.append(0)
+    sum_list.append(sum(plist))
 
 print(sum(mAP_list) / len(mAP_list))
 json.dump(mAP_list, open(resp, "w"))
 
-top_indices = np.argsort(mAP_list)[-20:]
+top_indices = np.argsort(sum_list)[-20:]
 top_pic_index = [testinput[x] for x in top_indices]
 print(top_pic_index)
 
