@@ -25,9 +25,9 @@ resp = os.path.join(args.dpath, "mAP.json")
 mask2p = os.path.join(args.dpath, "mask2.npy")
 print('load data')
 md = json.load(open(classp, "r"))
-m2 = np.load(mask2p)
+m2 = torch.LongTensor(np.load(mask2p)).to(0)
 image_matrix = torch.FloatTensor(np.load(imagep))
-testset = torch.LongTensor(np.load(testp)).to(0)
+testset = np.load(testp)
 testinput = testset[:, 0]
 test_class = testset[:, 1]
 dataset = GeMData(image_matrix, torch.LongTensor(testinput))
