@@ -5,73 +5,7 @@ import argparse
 import os
 from tqdm import tqdm 
 import json
-
-#============================================================================#
-#changeImageShape(path)
-#Input: the location of single image: E.g: "F:/Image_data/data/image/"
-#Output: Single image with shape of 224X224X3
-#
-# Image first reshape scale to longer side = 224
-# Full fill empty part with origin part og image after an gaussian filter
-#============================================================================#
-def changeImageShape(path):
-    image = None                #clear image variable in case memory use error from imread()
-    image  = cv2.imread(path)    
-    image1 = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) #convert BGR to RGB
-    
-
-    if image1.shape[1] < image1.shape[0]:
-        scale_percent = image1.shape[0]/224
-        width = round(image1.shape[1] / scale_percent)
-        height = round(image1.shape[0] / scale_percent)
-        
-    else:
-        scale_percent = image1.shape[1]/224
-        width = round(image1.shape[1] / scale_percent)
-        height = round(image1.shape[0] / scale_percent)
-
-    dim = (width, height)
-    resized = cv2.resize(image1, dim, interpolation = cv2.INTER_AREA)
-    #create an empty array with size of 224*224*3:
-    resized_image = np.zeros((224,224,3),dtype=np.uint8)
-    
-    
-    
-    #Copy resized image into 300*300*3 matrix
-    if (resized.shape[0]+1)<224:
-        center_temp = (224 - resized.shape[0])//2
-        
-        if resized.shape[0]%2:
-            resized_image[center_temp+1:224-center_temp, 0:224] = resized[0:resized.shape[0], 0:224]
-        else:
-            resized_image[center_temp:224-center_temp, 0:224] = resized[0:resized.shape[0], 0:224]
-        
-        if center_temp > resized.shape[0]:
-            return np.reshape(resized_image, (3,224,224))
-        #Fill out blank part of image
-        gaussiand_image_top = cv2.GaussianBlur(resized[0:center_temp, 0:224],(7,7),1000)
-        gaussiand_image_bottom = cv2.GaussianBlur(resized[(resized.shape[0]-center_temp):resized.shape[0], 0:224],(7,7),1000)
-        resized_image[0:center_temp, 0:224] = gaussiand_image_top
-        resized_image[(224-center_temp):224, 0:224] = gaussiand_image_bottom
-    elif (resized.shape[1]+1)<224:
-        center_temp = (224 - resized.shape[1])//2
-       
-        if resized.shape[1]%2:
-             resized_image[0:224, center_temp+1:224-center_temp] = resized[0:224, 0:resized.shape[1]]
-        else:
-             resized_image[0:224, center_temp:224-center_temp] = resized[0:224, 0:resized.shape[1]]
-        
-        if center_temp > resized.shape[1]:
-            return np.reshape(resized_image, (3,224,224))     
-        #Fill out blank part of image
-        gaussiand_image_left = cv2.GaussianBlur(resized[0:224, 0:center_temp],(7,7),1000)
-        gaussiand_image_right = cv2.GaussianBlur(resized[0:224,(resized.shape[1]-center_temp):resized.shape[1]],(7,7),1000)
-        resized_image[0:224, 0:center_temp] = gaussiand_image_left
-        resized_image[0:224, (224-center_temp):224] = gaussiand_image_right
-    else:
-        resized_image[0:resized.shape[0], 0:resized.shape[1]] = resized[0:resized.shape[0], 0:resized.shape[1]]
-
-    return resized_image.transpose(2,0,1)
+from process_data.change_shape import changeImageShape
 
 
 
@@ -81,6 +15,13 @@ def changeImageShape(path):
 parser = argparse.ArgumentParser()
 parser.add_argument("--dpath", default="/mnt/e/data/", type=str,
                         help="Path of the output dir.")
+parser.add_argument("--filter_type", default="Gaussian", type=str,
+                        help="Filter type for empty space of images")
+parser.add_argument("--image_resolution", default=224, type=int,
+                        help="resized image resolution: e.g: 224")
+parser.add_argument("--numChannels", default=3, type=int,
+                        help="number of channels for images. e.g: 3")
+
 args = parser.parse_args()
 path = os.path.join(args.dpath, "Image_data/sv_data/image/")  # image file path
 print("file path", path)
@@ -109,7 +50,7 @@ for l in tqdm(files, total=len(files)):
         
         #Resize_testset_image
         
-        resized_image = changeImageShape(path_temp)
+        resized_image = resized_image = changeImageShape(path_temp, filter_type=args.filter_type, res=args.image_resolution, numChannels=args.numChannels, sigma=1000, filter_size=7)
         if resized_image.sum() == 0:
             exit()
         
@@ -130,7 +71,8 @@ for l in tqdm(files, total=len(files)):
         test_set.append(np.array(temp_set))
         index += 1
 
-np.save(test_image_path, np.array(image_set, dtype = np.uint8))
+npm = np.array(image_set, dtype = np.uint8)
+np.save(test_image_path, np.transpose(npm, (0, 3, 1, 2)))
 np.save(test_set_path, np.array(test_set))
 # saved_index = {k: v.tolist() for k, v in index_dict.items()}
 # json.dump(saved_index, open(dictionary_path, 'w'))
