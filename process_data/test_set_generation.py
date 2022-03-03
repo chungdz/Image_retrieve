@@ -44,13 +44,14 @@ index = 0   #index for test set
 for l in tqdm(files, total=len(files)):
     l1 = l + "/"
     files1 = None
-    files1 = os.listdir(path + l1) 
+    files1 = os.listdir(path + l1)
+    
     for images in files1:
         path_temp = path + l1 + images
         
         #Resize_testset_image
         
-        resized_image = resized_image = changeImageShape(path_temp, filter_type=args.filter_type, res=args.image_resolution, numChannels=args.numChannels, sigma=1000, filter_size=7)
+        resized_image = changeImageShape(path_temp, filter_type=args.filter_type, res=args.image_resolution, numChannels=args.numChannels, sigma=1000, filter_size=7)
         if resized_image.sum() == 0:
             exit()
         
