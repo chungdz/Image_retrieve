@@ -72,5 +72,10 @@ for i in tqdm(range(final_matrix.shape[0]), desc='map to binary and calculate mA
 print(sum(mAP_list) / len(mAP_list))
 json.dump(mAP_list, open(resp, "w"))
 
+top_indices = np.argsort(mAP_list)[:20]
+top_pic_index = [testinput[x] for x in top_indices]
+print(top_pic_index)
+
+
 
 
