@@ -16,14 +16,18 @@ parser.add_argument("--isValid", default=0, type=int)
 args = parser.parse_args()
 
 dbp = os.path.join(args.dpath, "database.npy")
-classp = os.path.join(args.dpath, "model_num.json")
+dbp_masked = os.path.join(args.dpath, "database_masked.npy")
+# classp = os.path.join(args.dpath, "model_num.json")
 resp = os.path.join(args.dpath, "mAP.json")
 testp = os.path.join(args.dpath, args.to_test)
 imagep = os.path.join(args.dpath, args.test_matrix)
+dbcmp = os.path.join(args.dpath, "dbcm.npy")
 print('load data')
 db = np.load(dbp)
+db_masked = np.load(dbp_masked)
+dbcm = np.load(dbcmp)
 testdb = np.load(imagep)
-md = json.load(open(classp, "r"))
+# md = json.load(open(classp, "r"))
 testset = np.load(testp)
 # Define a model and fit it to data
 print('fit')
@@ -36,7 +40,7 @@ model.fit(db, verbose=True, random_state=7)
 # Create a searcher to index data with the model
 print('load searcher')
 searcher = LOPQSearcher(model)
-searcher.add_data(db)
+searcher.add_data(db_masked)
 
 # Retrieve ranked nearest neighbors
 res = []
@@ -56,10 +60,10 @@ test_class = testset[:, 1]
 labeled = np.zeros(final_matrix.shape)
 mAP_list = []
 for i in tqdm(range(final_matrix.shape[0]), desc='map to binary and calculate mAP'):
-    cur_s = set(md[str(test_class[i])])
+    # cur_s = set(md[str(test_class[i])])
     plist = []
     for j in range(final_matrix.shape[1]):
-        labeled[i, j] = int(final_matrix[i][j] in cur_s)
+        labeled[i, j] = int(dbcm[final_matrix[i][j]] == test_class[i])
         if labeled[i, j] == 1:
             plist.append(labeled[i, :j + 1].sum() / (j + 1))
 

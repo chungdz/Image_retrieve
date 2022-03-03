@@ -16,6 +16,7 @@ dbp = os.path.join(args.dpath, "database.npy")
 dbp_masked = os.path.join(args.dpath, "database_masked.npy")
 indexpath = os.path.join(args.dpath, "indexinfo.csv")
 mask2p = os.path.join(args.dpath, "mask2.npy")
+dbcmp = os.path.join(args.dpath, "dbcm.npy")
 print('load data')
 fdf = pd.read_csv(indexpath)
 pic2cm = {}
@@ -34,18 +35,25 @@ testset_masked = np.array(testset_masked)
 print("masked test set shape", testset_masked.shape)
 
 mask2 = []
+dbcm = []
+db_masked = []
 for i in range(db.shape[0]):
     if pic2cm[i] in discarded: 
         mask2.append(0)
     else:
         mask2.append(1)
+        db_masked.append(db[i].tolist())
+        dbcm.append(pic2cm[i])
 mask2 = np.array(mask2).reshape(1, -1)
-
-print("masked 2 shape", mask2.shape)
+db_masked = np.array(db_masked)
+dbcm = np.array(dbcm)
+print("masked 2 shape", mask2.shape, "trimmed database shape", db_masked.shape)
 
 print('save data')
 np.save(testset_maskedpath, testset_masked)
 np.save(mask2p, mask2)
+np.save(dbp_masked, db_masked)
+np.save(dbcmp, dbcm)
 
 
 

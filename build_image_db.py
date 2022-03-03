@@ -30,7 +30,7 @@ print('load data')
 pmatrix = torch.ByteTensor(np.load(matrixp))
 indexlist = torch.arange(pmatrix.size(0))
 dataset = GeMData(pmatrix, indexlist)
-data_loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False, num_workers=8, pin_memory=True)
+data_loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False, num_workers=6, pin_memory=True)
 print('load trained model')
 model_info = GeMConfig()
 model_info.arch = args.arch
