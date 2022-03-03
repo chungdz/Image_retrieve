@@ -16,6 +16,7 @@ parser.add_argument("--ratio", default=7, type=int,
                         help="#valid over #train.")
 parser.add_argument("--neg_count", default=4, type=int,
                         help="negative count.")
+parser.add_argument("--min_len", default=58, type=int, help="min length of data")
 args = parser.parse_args()
 
 indexpath = os.path.join(args.dpath, "indexinfo.csv")
@@ -24,6 +25,8 @@ train_path2 = os.path.join(args.dpath, "train2.npy")
 valid_path = os.path.join(args.dpath, "valid.npy")
 test_path = os.path.join(args.dpath, "valid_for_test.npy")
 dictionary_path = os.path.join(args.dpath, "model_num.json")
+discp = os.path.join(args.dpath, "cutted_class.json")
+discarded = []
 
 fdf = pd.read_csv(indexpath)
 end_index = fdf.shape[0] - 1
@@ -70,6 +73,10 @@ for carm_index, pic_set in tqdm(cdict.items(), total=len(cdict), desc='make trai
                     new2.append(neg_idx)
             train_set_reverse.append(new2)
     
+    if len(pic_set) < args.min_len:
+        discarded.append(int(carm_index))
+        continue
+    
     pos_sample_valid = random.sample(train_list, valid_num)
     for i in range(valid_num):
         new_sample_pos = [valid_list[i], pos_sample_valid[i], 1]
@@ -90,6 +97,7 @@ train_set_reverse = np.array(train_set_reverse)
 valid_set = np.array(valid_set)
 test_set = np.array(test_set)
 print(train_set.shape, train_set_reverse.shape, valid_set.shape, test_set.shape)
+print(len(discarded), "class was discarded")
 
 np.save(train_path, train_set)
 np.save(train_path2, train_set_reverse)
@@ -98,6 +106,8 @@ np.save(test_path, test_set)
 
 saved_index = {int(k): [int(x) for x in v] for k, v in cdict.items()}
 json.dump(saved_index, open(dictionary_path, 'w'))
+json.dump(discarded, open(discp, 'w'))
+
 
 
 
