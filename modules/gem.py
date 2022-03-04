@@ -86,6 +86,7 @@ class GeM(nn.Module):
             ndata = F.interpolate(data, newl, mode='bilinear', align_corners=True)
             ndata = ndata.reshape(batch_size, 2 + negc, 3, newl, newl)
             l = newl
+            data = ndata
 
         r1 = data[:, 0].reshape(batch_size, 3, l, l)
         r1 = self.resnet(r1)
