@@ -51,7 +51,12 @@ class GeM(nn.Module):
         gem = self.gem_proj(gem)
         gem_size = torch.linalg.vector_norm(gem, ord=2, dim=-1, keepdim=True) + 1e-7
         return gem / gem_size
-        # return gem
+    
+    def gem_no_norm(self, x):
+        xsize = torch.linalg.vector_norm(x, ord=2, dim=-1, keepdim=False) + 1e-7
+        xpower = torch.sum(torch.pow(x, self.p), dim=-1, keepdim=False)
+        gem = torch.pow(xpower / xsize + 0.1, 1 / self.p)
+        return gem
     
     def forward(self, data, l, valid_mode=False):
         '''
@@ -90,13 +95,23 @@ class GeM(nn.Module):
 
         return torch.sum(r1 * r2, dim=-1)
     
-    def predict(self, data, l):
+    def predict(self, data, l, scale_list=[]):
         batch_size = data.size(0)
-        r = data.reshape(batch_size, 3, l, l)
-        r = self.resnet(r)
+        data = data.reshape(batch_size, 3, l, l)
+        r = self.resnet(data)
         r = r.reshape(batch_size, self.hidden_size, -1)
-        r = self.gem(r)
-        return r
+        r = self.gem_no_norm(r)
+        
+        for scale in scale_list:
+            ndata = F.interpolate(data, int(round(scale * l)), mode='bilinear', align_corners=True)
+            tmp = self.resnet(ndata)
+            tmp = tmp.reshape(batch_size, self.hidden_size, -1)
+            tmp = self.gem_no_norm(tmp)
+            r = r + tmp
+
+        r = self.gem_proj(r)
+        r_size = torch.linalg.vector_norm(r, ord=2, dim=-1, keepdim=True) + 1e-7
+        return r / r_size
     
     def mips(self, data, l, db, k=20):
         curq = self.predict(data, l)
