@@ -107,10 +107,10 @@ class GeM(nn.Module):
             tmp = self.resnet(ndata)
             tmp = tmp.reshape(batch_size, self.hidden_size, -1)
             tmp = self.gem_no_norm(tmp)
-            tmp = self.gem_proj(tmp)
             r = r + tmp
         
         r = r / (1 + len(scale_list))
+        r = self.gem_proj(r)
         r_size = torch.linalg.vector_norm(r, ord=2, dim=-1, keepdim=True) + 1e-7
         return r / r_size
     
