@@ -64,7 +64,7 @@ def train(cfg, epoch, model, loader, optimizer, steps_one_epoch):
         # 1. Forward
         data = data / 255.0
         data = data.to(0)
-        pred = model(data, 224, sclae=args.scale)
+        pred = model(data, 224, scale=args.scale)
         loss = F.cross_entropy(pred, input_label[:data.size(0)])
 
         # 3.Backward.
@@ -98,7 +98,7 @@ def validate(cfg, model, valid_data_loader):
             input_data = data[:, :-1] / 255.0
             label_data = data[:, -1]
             input_data = input_data.to(0)
-            res = model(input_data, 224, valid_mode=True)
+            res = model(input_data, 224, valid_mode=True, scale=args.scale)
             labels += label_data.cpu().numpy().tolist()
             preds += res.cpu().numpy().tolist()
     print('running score')
