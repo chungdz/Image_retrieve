@@ -18,7 +18,8 @@ class GeMConfig():
         self.neg_count = 4
         self.hidden_size = 512
         self.progress = True
-        self.scale_list=[0.5, 0.7071, 1, 1.4147, 2.0]
+        self.scale_list=[0.5, 1, 2.0]
+
 
 
 
