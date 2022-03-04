@@ -47,7 +47,7 @@ with torch.no_grad():
         input_data = data / 255.0
         input_data = input_data.to(0)
         if args.multi_scale == 1:
-            res = model.predict(input_data, 224, scale_list=[0.5, 0.7071, 1, 1.4147, 2.0])
+            res = model.predict(input_data, 224, scale_list=[1, 2.0])
         else:
             res = model.predict(input_data, 224)
         batch_res.append(res.cpu().numpy())

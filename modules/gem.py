@@ -58,7 +58,7 @@ class GeM(nn.Module):
         gem = torch.pow(xpower / xsize + 0.1, 1 / self.p)
         return gem
     
-    def forward(self, data, l, valid_mode=False):
+    def forward(self, data, l, valid_mode=False, scale=1):
         '''
         data for train is like
         torch.Size([32, 6, 3, 224, 224])
@@ -80,6 +80,12 @@ class GeM(nn.Module):
         
         batch_size = data.size(0)
         data = data.reshape(batch_size, 2 + negc, 3, l, l)
+        if scale != 1:
+            newl = int(round(scale * l))
+            data = data.reshape(batch_size * (2 + negc), 3, l, l)
+            ndata = F.interpolate(data, newl, mode='bilinear', align_corners=True)
+            ndata = ndata.reshape(batch_size, 2 + negc, 3, newl, newl)
+            l = newl
 
         r1 = data[:, 0].reshape(batch_size, 3, l, l)
         r1 = self.resnet(r1)

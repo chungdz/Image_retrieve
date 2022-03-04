@@ -64,7 +64,7 @@ def train(cfg, epoch, model, loader, optimizer, steps_one_epoch):
         # 1. Forward
         data = data / 255.0
         data = data.to(0)
-        pred = model(data, 224)
+        pred = model(data, 224, sclae=args.scale)
         loss = F.cross_entropy(pred, input_label[:data.size(0)])
 
         # 3.Backward.
@@ -114,6 +114,7 @@ parser.add_argument("--dpath", default="/mnt/e/data/", type=str,
 parser.add_argument("--epoch", default=6, type=int)
 parser.add_argument("--batch_size", default=32, type=int)
 parser.add_argument("--lr", default=0.001, type=float)
+parser.add_argument("--scale", default=1, type=float)
 parser.add_argument("--save_path", default='para', type=str)
 parser.add_argument("--arch", default='resnet18', type=str, 
                         help="backbone of model, support resnet18, resnet50, resnet101")
