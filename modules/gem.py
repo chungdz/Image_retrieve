@@ -42,7 +42,7 @@ class GeM(nn.Module):
         self.neg_count = cfg.neg_count
         self.hidden_size = cfg.hidden_size
         self.scale_list = cfg.scale_list
-        self.gem_proj = nn.Linear(self.hidden_size * self.scale_list, self.hidden_size)
+        self.gem_proj = nn.Linear(self.hidden_size * len(self.scale_list), self.hidden_size)
         self.p = nn.Parameter(torch.Tensor([3]))
     
     def gem(self, x):
