@@ -98,21 +98,22 @@ class GeM(nn.Module):
     def predict(self, data, l, scale_list=[]):
         batch_size = data.size(0)
         data = data.reshape(batch_size, 3, l, l)
-        r = self.resnet(data)
-        r = r.reshape(batch_size, self.hidden_size, -1)
-        r = self.gem_no_norm(r)
-        r = self.gem_proj(r)
+        if len(scale_list) < 1:
+            r = self.resnet(data)
+            r = r.reshape(batch_size, self.hidden_size, -1)
+            r = self.gem(r)
+            return r
         
+        all_v = []
         for scale in scale_list:
             ndata = F.interpolate(data, int(round(scale * l)), mode='bilinear', align_corners=True)
             tmp = self.resnet(ndata)
             tmp = tmp.reshape(batch_size, self.hidden_size, -1)
             tmp = self.gem_no_norm(tmp)
             tmp = self.gem_proj(tmp)
-            r = r + tmp
+            all_v.append(tmp)
         
-        # r = r / (1 + len(scale_list))
-        # r = self.gem_proj(r)
+        r = torch.cat(all_v, dim=-1)
         r_size = torch.linalg.vector_norm(r, ord=2, dim=-1, keepdim=True) + 1e-7
         return r / r_size
     
