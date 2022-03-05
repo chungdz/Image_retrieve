@@ -116,8 +116,7 @@ class GeM(nn.Module):
             ndata = F.interpolate(data, int(round(scale * l)), mode='bilinear', align_corners=True)
             tmp = self.resnet(ndata)
             tmp = tmp.reshape(batch_size, self.hidden_size, -1)
-            tmp = self.gem_no_norm(tmp)
-            tmp = self.gem_proj(tmp)
+            tmp = self.gem(tmp)
             all_v.append(tmp)
         
         r = torch.cat(all_v, dim=-1)
