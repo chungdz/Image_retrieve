@@ -29,8 +29,8 @@ parser.add_argument("--dpath", default="/mnt/e/data/", type=str,
 args = parser.parse_args()
 path = os.path.join(args.dpath, "Image_data/data/image/")  # image file path
 label_path = os.path.join(args.dpath, "Image_data/data/label/") # label file path
-front_csv_path = os.path.join(args.dpath, "cat_front.csv")
-rear_csv_path = os.path.join(args.dpath, "cat_rear.csv")
+front_csv_path = os.path.join(args.dpath, "car_front.csv")
+rear_csv_path = os.path.join(args.dpath, "car_rear.csv")
 print("file path", path)
 files = os.listdir(path)
 
@@ -93,7 +93,9 @@ pd.set_option('display.width', None)
 print(df_front_all.head(5))
 print(df_rear_all.head(5))
 
+df_front_all["Index"] = df_front_all.index
 df_front_all.to_csv(front_csv_path, index=None)
+df_rear_all["Index"] = df_rear_all.index
 df_rear_all.to_csv(rear_csv_path, index=None)
 
 

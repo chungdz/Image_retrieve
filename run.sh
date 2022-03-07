@@ -5,9 +5,10 @@ cd data
 
 cd ..
 python -m compcars.data_info --dpath=ir
-python -m process_data.image_matrix --dpath=ir --image_info=cat_front.csv --image_root_path=Image_data/data/image/
+python -m compcars.test_data_info --dpath=ir
+python -m process_data.image_matrix --dpath=ir --image_info=cat_front.csv --image_root_path=Image_data/data/image/ --mname=imageset.npy
+python -m process_data.image_matrix --dpath=ir --image_info=tindexinfo.csv --image_root_path=Image_data/sv_data/image/ --mname=test_image.npy
 python -m process_data.make_train_valid --dpath=ir
-python -m compcars.test_set_generation --dpath=ir
 
 python train.py --dpath=ir --save_path=ir/para/ --batch_size=64 --epoch=3 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=resnet50
 python build_image_db.py --dpath=ir --save_path=ir/para/model.ep0 --batch_size=64 --input=imageset.npy --output=database.npy --arch=resnet50

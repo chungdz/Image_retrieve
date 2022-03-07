@@ -19,9 +19,11 @@ parser.add_argument("--ratio", default=7, type=int,
 parser.add_argument("--neg_count", default=4, type=int,
                         help="negative sample used in triplet loss training, should be the same one as in datasets/config")
 parser.add_argument("--min_len", default=58, type=int, help="min length of the same class, if less than, all images will not be used for valid and test")
+parser.add_argument("--iname", default='car_front.csv', type=str,
+                        help="index and class information csv used by following file")
 args = parser.parse_args()
 
-indexpath = os.path.join(args.dpath, "indexinfo.csv")
+indexpath = os.path.join(args.dpath, args.iname)
 train_path = os.path.join(args.dpath, "train.npy")
 train_path2 = os.path.join(args.dpath, "train2.npy")
 valid_path = os.path.join(args.dpath, "valid.npy")
@@ -30,7 +32,7 @@ dictionary_path = os.path.join(args.dpath, "model_num.json")
 discp = os.path.join(args.dpath, "cutted_class.json")
 discarded = []
 
-fdf = pd.read_csv(indexpath)
+fdf = pd.read_csv(indexpath)[["Index", "Class"]]
 end_index = fdf.shape[0] - 1
 
 cdict = collections.defaultdict(set)
