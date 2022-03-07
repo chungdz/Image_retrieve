@@ -7,12 +7,14 @@ from tqdm import tqdm
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dpath", default="/mnt/e/data/", type=str,
-                        help="Path of the output dir.")
-parser.add_argument("--dimension", default=64, type=int)
-parser.add_argument("--k", default=20, type=int)
-parser.add_argument("--to_test", default="test.npy", type=str)
-parser.add_argument("--test_matrix", default="tdatabase.npy", type=str)
-parser.add_argument("--isValid", default=0, type=int)
+                        help="root path of all data")
+parser.add_argument("--dimension", default=64, type=int, help='''number of fine codes; 
+                                same as number of bytes per compressed vector in memory with 
+                                256 subquantizer clusters''')
+parser.add_argument("--k", default=20, type=int, help="top k images to return")
+parser.add_argument("--to_test", default="test_masked.npy", type=str, help="query dataset")
+parser.add_argument("--test_matrix", default="tdatabase.npy", type=str, help="encoded query vectors", help="encoded query vectors")
+parser.add_argument("--isValid", default=0, type=int, help='is the encoded query matrix same as database')
 args = parser.parse_args()
 
 dbp = os.path.join(args.dpath, "database.npy")

@@ -9,12 +9,12 @@ from tqdm import tqdm, trange
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dpath", default="ir", type=str,
-                        help="Path of the output dir.")
-parser.add_argument("--batch_size", default=1024, type=int)
-parser.add_argument("--k", default=20, type=int)
-parser.add_argument("--to_test", default="test_masked.npy", type=str)
-parser.add_argument("--test_matrix", default="tdatabase.npy", type=str)
-parser.add_argument("--isValid", default=0, type=int)
+                        help="root path of all data")
+parser.add_argument("--batch_size", default=1024, type=int, help="searching batch size used in Pytorch DataLoader")
+parser.add_argument("--k", default=20, type=int, help="top k images to return")
+parser.add_argument("--to_test", default="test_masked.npy", type=str, help="query dataset")
+parser.add_argument("--test_matrix", default="tdatabase.npy", type=str, help="encoded query vectors")
+parser.add_argument("--isValid", default=0, type=int, help='is the encoded query matrix same as database')
 args = parser.parse_args()
 
 dbp = os.path.join(args.dpath, "database.npy")
