@@ -25,7 +25,7 @@ from tqdm import tqdm
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dpath", default="/mnt/e/data/", type=str,
-                        help="Path of the output dir.")
+                        help="root path of all data")
 args = parser.parse_args()
 path = os.path.join(args.dpath, "Image_data/data/image/")  # image file path
 label_path = os.path.join(args.dpath, "Image_data/data/label/") # label file path
