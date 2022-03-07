@@ -14,6 +14,8 @@ Download dataset from http://mmlab.ie.cuhk.edu.hk/datasets/comp_cars/
 Unzip all files, you can get two folders: *data* for trainset images and *sv_data* for testset images. Create foldler *~/ir/Image_data*, move two folders *data* and *sv_data* into this folder.
 
 ## Data prepocess
+Make sure that there are at least 32GB memory.
+
 At the root directory of the code, run the following instructions to generate dataset for training and testing:
 
 	python -m compcars.data_info --dpath=~/ir/
