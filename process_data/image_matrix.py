@@ -47,8 +47,8 @@ def generateImageSet(dataframe, index=None, start=None, end=None, path=None,
         # index_set.append(index)
         # model_set.append(dataframe["Class"].iloc[image_num])
         index += 1
-        if index > 2000:
-            break
+        # if index > 2000:
+        #     break
         # print("{}: Completed".format(index))
     imageset = np.array(image_set, dtype = np.uint8)
 
