@@ -6,7 +6,7 @@ cd data
 cd ..
 python -m compcars.data_info --dpath=ir
 python -m compcars.test_data_info --dpath=ir
-python -m process_data.image_matrix --dpath=ir --image_info=cat_front.csv --image_root_path=Image_data/data/image/ --mname=imageset.npy
+python -m process_data.image_matrix --dpath=ir --image_info=car_front.csv --image_root_path=Image_data/data/image/ --mname=imageset.npy
 python -m process_data.image_matrix --dpath=ir --image_info=tindexinfo.csv --image_root_path=Image_data/sv_data/image/ --mname=test_image.npy
 python -m process_data.make_train_valid --dpath=ir
 
