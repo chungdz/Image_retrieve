@@ -110,17 +110,19 @@ def validate(cfg, model, valid_data_loader):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dpath", default="/mnt/e/data/", type=str,
-                        help="Path of the output dir.")
-parser.add_argument("--epoch", default=6, type=int)
-parser.add_argument("--batch_size", default=32, type=int)
-parser.add_argument("--lr", default=0.001, type=float)
-parser.add_argument("--scale", default=1, type=float)
-parser.add_argument("--save_path", default='para', type=str)
+                        help="root path of all data")
+parser.add_argument("--epoch", default=6, type=int, help="training epoch")
+parser.add_argument("--batch_size", default=32, type=int, help="training batch size used in Pytorch DataLoader")
+parser.add_argument("--lr", default=0.001, type=float, help="Learning rate")
+parser.add_argument("--scale", default=1, type=float, help="scale of image, is scale is not 1, images will be rescaled first before training")
+parser.add_argument("--save_path", default='para', type=str, help="path to save training model parameters")
 parser.add_argument("--arch", default='resnet18', type=str, 
                         help="backbone of model, support resnet18, resnet50, resnet101")
-parser.add_argument("--show_batch", default=1000, type=int)
-parser.add_argument("--lr_shrink", default=0.9, type=float)
-parser.add_argument("--start_epoch", default=-1, type=int)
+parser.add_argument("--show_batch", default=5, type=int, help="averaged batch loss will change each show_batch times")
+parser.add_argument("--lr_shrink", default=0.9, type=float, help="learning rate will multiply this shrinking number after one epoch")
+parser.add_argument("--start_epoch", default=-1, type=int, help='''whether to start training from scratch 
+                            or load parameter saved before and continue training. For example, if start_epoch=0, then model will load parameter 
+                            save_path/model.ep0 and start the second epoch of training''')
 args = parser.parse_args()
 print('load data')
 matrixp = os.path.join(args.dpath, "imageset.npy")
