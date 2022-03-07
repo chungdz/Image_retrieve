@@ -74,7 +74,7 @@ for l in tqdm(files, total=len(files)):
 
 data = {'Path': filepath, 'FileName': filenames, 
         'View Point': viewpoints, 'Year': year_list, 
-        'CarMake': car_makenames, 'CarModel': carmodel_list}
+        'CarMake': car_makenames, 'Class': carmodel_list}
 
 df = pd.DataFrame(data)
 

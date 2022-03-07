@@ -44,31 +44,35 @@ def generateImageSet(dataframe, index=None, start=None, end=None, path=None,
             exit()
         image_set.append(resized_image)
         index_set.append(index)
-        model_set.append(dataframe["CarModel"].iloc[image_num])
+        model_set.append(dataframe["Class"].iloc[image_num])
         index+=1
         # print("{}: Completed".format(index))
     imageset = np.array(image_set, dtype = np.uint8)
 
     #save index info as a dataframe
-    data = {'Index': index_set, 'Carmodel': model_set}
+    data = {'Index': index_set, 'Class': model_set}
 
     index_df = pd.DataFrame(data)
     return imageset, index_df
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dpath", default="/mnt/e/data/", type=str,
-                        help="Path of the output dir.")
+                        help="root path of all data")
+parser.add_argument("--image_info", default="cat_front.csv", type=str,
+                        help="csv file name with path and class information as two columns for all images")
+parser.add_argument("--image_root_path", default="Image_data/data/image/", type=str,
+                        help="dpath + image_root_path + path_info_in_csv_file = absolute path of each image")
 parser.add_argument("--filter_type", default="Gaussian", type=str,
-                        help="Filter type for empty space of images")
+                        help="Filter type for empty space of images after rescaling, Black, White, or Gaussian")
 parser.add_argument("--image_resolution", default=224, type=int,
-                        help="resized image resolution: e.g: 224")
+                        help="square image resolution after resized")
 parser.add_argument("--numChannels", default=3, type=int,
-                        help="number of channels for images. e.g: 3")
+                        help="number of channels of input images, for RGB images, its 3")
 args = parser.parse_args()
 matrix_path = os.path.join(args.dpath, 'imageset.npy')
 image_index = os.path.join(args.dpath, 'indexinfo.csv')
-front_csv_path = os.path.join(args.dpath, "cat_front.csv")
-img_path = os.path.join(args.dpath, "Image_data/data/image/")
+front_csv_path = os.path.join(args.dpath, args.image_info)
+img_path = os.path.join(args.dpath, args.image_root_path)
 
 npm, dfm = generateImageSet(pd.read_csv(front_csv_path), path=img_path, filter_type=args.filter_type, res=args.image_resolution, numChannels=args.numChannels)
 

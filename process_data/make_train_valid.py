@@ -11,12 +11,14 @@ random.seed(7)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dpath", default="/mnt/e/data/", type=str,
-                        help="Path of the output dir.")
+                        help="root path of all data")
 parser.add_argument("--ratio", default=7, type=int,
-                        help="#valid over #train.")
+                        help='''1 / ratio images of the same class will be used for validation, 
+                        if the number of the same class if less than the ratio, 
+                        all images in that class will be used to train''')
 parser.add_argument("--neg_count", default=4, type=int,
-                        help="negative count.")
-parser.add_argument("--min_len", default=58, type=int, help="min length of data")
+                        help="negative sample used in triplet loss training, should be the same one as in datasets/config")
+parser.add_argument("--min_len", default=58, type=int, help="min length of the same class, if less than, all images will not be used for valid and test")
 args = parser.parse_args()
 
 indexpath = os.path.join(args.dpath, "indexinfo.csv")
