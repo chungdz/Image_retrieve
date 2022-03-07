@@ -39,7 +39,7 @@ def generateImageSet(dataframe, index=None, start=None, end=None, path=None,
         assert(image_num == dataframe['Index'][image_num])
         impath = dataframe["Path"].iloc[image_num]
         if not path is None:
-            impath = path + dataframe["Path"].iloc[image_num]
+            impath = os.path.join(path, dataframe["Path"].iloc[image_num])
         resized_image = changeImageShape(impath, res, numChannels, filter_type, sigma, filter_size)
         if resized_image.sum() == 0:
             exit()
