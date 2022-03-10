@@ -80,6 +80,10 @@ top_indices = np.argsort(sum_list)[-20:]
 top_pic_index = [testinput[x] for x in top_indices]
 print(top_pic_index)
 
+common_indices = np.argsort(mAP_list)[-20:]
+common_pic_index = [testinput[x] for x in common_indices]
+print(common_pic_index)
+
 
 
 
