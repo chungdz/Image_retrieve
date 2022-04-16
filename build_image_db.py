@@ -34,7 +34,7 @@ dataset = GeMData(pmatrix, indexlist)
 data_loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False, num_workers=6, pin_memory=True)
 print('load trained model')
 model_info = GeMConfig()
-model_info.arch = args.arch
+model_info.set_arch(args.arch)
 model = GeM(model_info)
 pretrained_model = torch.load(modelp, map_location='cpu')
 print(model.load_state_dict(pretrained_model, strict=False))
