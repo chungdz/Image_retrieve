@@ -16,9 +16,14 @@ class GeMConfig():
     def __init__(self):
 
         self.neg_count = 4
-        self.hidden_size = 512
         self.progress = True
 
+    def set_arch(self, arch):
+        self.arch = arch
+        if arch == 'resnet18':
+            self.hidden_size = 512
+        else:
+            self.hidden_size = 2048
 
 
 
