@@ -123,9 +123,10 @@ parser.add_argument("--lr_shrink", default=0.9, type=float, help="learning rate 
 parser.add_argument("--start_epoch", default=-1, type=int, help='''whether to start training from scratch 
                             or load parameter saved before and continue training. For example, if start_epoch=0, then model will load parameter 
                             save_path/model.ep0 and start the second epoch of training''')
+parser.add_argument("--mfile", default="imageset.npy", type=str)
 args = parser.parse_args()
 print('load data')
-matrixp = os.path.join(args.dpath, "imageset.npy")
+matrixp = os.path.join(args.dpath, args.mfile)
 trainsetp = os.path.join(args.dpath, "train.npy")
 validsetp = os.path.join(args.dpath, "valid.npy")
 
