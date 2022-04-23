@@ -25,6 +25,7 @@ python train.py --dpath=ir --save_path=ir/para/ --batch_size=64 --epoch=2 --show
 python train.py --dpath=ir --save_path=ir/para/ --batch_size=16 --epoch=3 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=resnet50 --scale=1.4147 --start_epoch=1
 
 
-
+python -m cifar.make_data --dpath=cifar100
+python -m process_data.make_train_valid --dpath=cifar100 --iname=train_info.csv
 
 
