@@ -64,7 +64,7 @@ def train(cfg, epoch, model, loader, optimizer, steps_one_epoch):
         # 1. Forward
         data = data / 255.0
         data = data.to(0)
-        pred = model(data, 224, scale=args.scale)
+        pred = model(data, cfg.img_size, scale=args.scale)
         loss = F.cross_entropy(pred, input_label[:data.size(0)])
 
         # 3.Backward.
@@ -98,7 +98,7 @@ def validate(cfg, model, valid_data_loader):
             input_data = data[:, :-1] / 255.0
             label_data = data[:, -1]
             input_data = input_data.to(0)
-            res = model(input_data, 224, valid_mode=True, scale=args.scale)
+            res = model(input_data, cfg.img_size, valid_mode=True, scale=args.scale)
             labels += label_data.cpu().numpy().tolist()
             preds += res.cpu().numpy().tolist()
     print('running score')
@@ -113,6 +113,7 @@ parser.add_argument("--dpath", default="/mnt/e/data/", type=str,
                         help="root path of all data")
 parser.add_argument("--epoch", default=6, type=int, help="training epoch")
 parser.add_argument("--batch_size", default=32, type=int, help="training batch size used in Pytorch DataLoader")
+parser.add_argument("--img_size", default=224, type=int, help="size of img")
 parser.add_argument("--lr", default=0.001, type=float, help="Learning rate")
 parser.add_argument("--scale", default=1, type=float, help="scale of image, is scale is not 1, images will be rescaled first before training")
 parser.add_argument("--save_path", default='para', type=str, help="path to save training model parameters")

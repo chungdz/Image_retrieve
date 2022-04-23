@@ -22,6 +22,7 @@ parser.add_argument("--arch", default='resnet18', type=str, help="backbone of mo
 parser.add_argument("--save_path", default='ir/para/model.ep0', type=str, help="where to load model parameters")
 parser.add_argument("--input", default="imageset.npy", type=str, help="image matrix")
 parser.add_argument("--output", default="database.npy", type=str, help="encoded image vectors")
+parser.add_argument("--img_size", default=224, type=int, help="size of img")
 args = parser.parse_args()
 
 matrixp = os.path.join(args.dpath, args.input)
@@ -47,9 +48,9 @@ with torch.no_grad():
         input_data = data / 255.0
         input_data = input_data.to(0)
         if args.multi_scale == 1:
-            res = model.predict(input_data, 224, scale_list=[0.5, 0.7071, 1.0, 1.4147, 2.0])
+            res = model.predict(input_data, args.img_size, scale_list=[0.5, 0.7071, 1.0, 1.4147, 2.0])
         else:
-            res = model.predict(input_data, 224)
+            res = model.predict(input_data, args.img_size)
         batch_res.append(res.cpu().numpy())
 
 final_matrix = np.concatenate(batch_res, axis=0)
