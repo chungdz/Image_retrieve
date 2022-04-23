@@ -26,7 +26,7 @@ python train.py --dpath=ir --save_path=ir/para/ --batch_size=16 --epoch=3 --show
 
 
 python -m cifar.make_data --dpath=cifar100
-python -m process_data.make_train_valid --dpath=cifar100 --iname=train_info.csv
-python train.py --dpath=cifar100 mfile=train_image_set.npy --save_path=cifar100/para/ --batch_size=64 --epoch=3 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=resnet50
+python -m process_data.make_train_valid --dpath=cifar100 --iname=train_info.csv --skip=4
+python train.py --dpath=cifar100 mfile=train_image_set.npy --save_path=cifar100/para/ --batch_size=64 --epoch=1 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=resnet50
 
 

@@ -21,6 +21,8 @@ parser.add_argument("--neg_count", default=4, type=int,
 parser.add_argument("--min_len", default=58, type=int, help="min length of the same class, if less than, all images will not be used for valid and test")
 parser.add_argument("--iname", default='car_front.csv', type=str,
                         help="index and class information csv used by following file")
+parser.add_argument("--skip", default=1, type=int,
+                        help="skip to shrink the size of training set")
 args = parser.parse_args()
 
 indexpath = os.path.join(args.dpath, args.iname)
@@ -62,7 +64,7 @@ for carm_index, pic_set in tqdm(cdict.items(), total=len(cdict), desc='make trai
     train_list = pic_list[valid_num:]
     
     for i in range(train_num - 1):
-        for j in range(i + 1, train_num):
+        for j in range(i + 1, train_num, args.skip):
             new_sample = [train_list[i], train_list[j]]
             while len(new_sample) < 2 + args.neg_count:
                 neg_idx = random.randint(0, end_index - 1)
