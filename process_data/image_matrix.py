@@ -50,7 +50,7 @@ def generateImageSet(dataframe, index=None, start=None, end=None, path=None,
         # if index > 2000:
         #     break
         # print("{}: Completed".format(index))
-    imageset = np.array(image_set, dtype = np.uint8)
+    imageset = np.array(image_set, dtype=np.uint8)
 
     #save index info as a dataframe
     # data = {'Index': index_set, 'Class': model_set}
