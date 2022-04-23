@@ -75,6 +75,9 @@ def changeImageShape(path, res=224, numChannels=3, filter_type='Gaussian', sigma
     image = None               #clear image variable in case memory use error from imread()
     image  = cv2.imread(path)    
     image1 = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) #convert BGR to RGB
+    if image1.shape[1] == image1.shape[2]:
+        return cv2.resize(image1, (res, res), interpolation=cv2.INTER_LINEAR)
+
     if image1.shape[1] < image1.shape[0]:
         scale_percent = image1.shape[0]/res
         width = round(image1.shape[1] / scale_percent)
@@ -85,7 +88,7 @@ def changeImageShape(path, res=224, numChannels=3, filter_type='Gaussian', sigma
         height = round(image1.shape[0] / scale_percent)
 
     dim = (width, height)
-    resized = cv2.resize(image1, dim, interpolation = cv2.INTER_AREA)
+    resized = cv2.resize(image1, dim, interpolation=cv2.INTER_LINEAR)
     #create an empty array with size of res*res*numChannels:
     resized_image = np.zeros((res,res,numChannels),dtype=np.uint8)
     
