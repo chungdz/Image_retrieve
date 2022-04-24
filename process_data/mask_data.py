@@ -14,13 +14,13 @@ testset_maskedpath = os.path.join(args.dpath, "test_masked.npy")
 discp = os.path.join(args.dpath, "cutted_class.json")
 dbp = os.path.join(args.dpath, "database.npy")
 dbp_masked = os.path.join(args.dpath, "database_masked.npy")
-indexpath = os.path.join(args.dpath, "indexinfo.csv")
+indexpath = os.path.join(args.dpath, "car_front.csv")
 mask2p = os.path.join(args.dpath, "mask2.npy")
 dbcmp = os.path.join(args.dpath, "dbcm.npy")
 print('load data')
 fdf = pd.read_csv(indexpath)
 pic2cm = {}
-for pic_index, carm in fdf.values.tolist():
+for pic_index, carm in fdf[['Index', 'Class']].values.tolist():
     pic2cm[pic_index] = carm
 testset = np.load(testsetpath)
 discarded = set(json.load(open(discp, "r")))
