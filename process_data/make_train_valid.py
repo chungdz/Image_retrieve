@@ -27,7 +27,7 @@ args = parser.parse_args()
 
 indexpath = os.path.join(args.dpath, args.iname)
 train_path = os.path.join(args.dpath, "train.npy")
-train_path2 = os.path.join(args.dpath, "train2.npy")
+train_path2 = os.path.join(args.dpath, "train_class.npy")
 valid_path = os.path.join(args.dpath, "valid.npy")
 test_path = os.path.join(args.dpath, "valid_for_test.npy")
 dictionary_path = os.path.join(args.dpath, "model_num.json")
@@ -43,7 +43,7 @@ for pic_index, carm_index in fdf.values:
     cdict[carm_index].add(pic_index)
 
 train_set = []
-train_set_reverse = []
+train_set_class = []
 valid_set = []
 test_set = []
 all_valid = set()
@@ -72,13 +72,9 @@ for carm_index, pic_set in tqdm(cdict.items(), total=len(cdict), desc='make trai
                     new_sample.append(neg_idx)
             train_set.append(new_sample)
 
-            new2 = [train_list[j], train_list[i]]
-            while len(new2) < 2 + args.neg_count:
-                neg_idx = random.randint(0, end_index - 1)
-                if neg_idx not in pic_set and neg_idx not in new2 and neg_idx not in all_valid:
-                    new2.append(neg_idx)
-            train_set_reverse.append(new2)
-    
+    for pic_index in train_list:
+        train_set_class.append([pic_index, carm_index])
+
     if len(pic_set) < args.min_len:
         discarded.append(int(carm_index))
         continue
@@ -99,21 +95,21 @@ for carm_index, pic_set in tqdm(cdict.items(), total=len(cdict), desc='make trai
         test_set.append([pidx, carm_index])
 
 train_set = np.array(train_set)
-train_set_reverse = np.array(train_set_reverse)
+random.shuffle(train_set_class)
+train_set_class = np.array(train_set_class)
 valid_set = np.array(valid_set)
 test_set = np.array(test_set)
-print(train_set.shape, train_set_reverse.shape, valid_set.shape, test_set.shape)
-print(len(discarded), "class was discarded")
+print(train_set.shape, train_set_class.shape, valid_set.shape, test_set.shape)
 
 np.save(train_path, train_set)
-np.save(train_path2, train_set_reverse)
+np.save(train_path2, train_set_class)
 np.save(valid_path, valid_set)
 np.save(test_path, test_set)
 
 saved_index = {int(k): [int(x) for x in v] for k, v in cdict.items()}
 json.dump(saved_index, open(dictionary_path, 'w'))
 json.dump(discarded, open(discp, 'w'))
-
+print("total {} classes".format(len(saved_index)), len(discarded), "class was discarded")
 
 
 
