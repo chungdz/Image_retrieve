@@ -13,10 +13,12 @@ class ModelConfig():
         self.dropout = 0.5
 
 class GeMConfig():
-    def __init__(self):
+    def __init__(self, dpath):
 
         self.neg_count = 4
         self.progress = True
+        self.md = json.load(open(os.path.join(dpath, 'model_num.json'), 'r'))
+        self.class_num = len(self.md)
 
     def set_arch(self, arch):
         self.arch = arch

@@ -131,7 +131,7 @@ matrixp = os.path.join(args.dpath, args.mfile)
 trainsetp = os.path.join(args.dpath, "train.npy")
 validsetp = os.path.join(args.dpath, "valid.npy")
 
-args.model_info = GeMConfig()
+args.model_info = GeMConfig(args.dpath)
 args.model_info.set_arch(args.arch)
 pmatrix = torch.ByteTensor(np.load(matrixp))
 trainset = torch.LongTensor(np.load(trainsetp))

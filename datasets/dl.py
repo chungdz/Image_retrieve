@@ -41,4 +41,18 @@ class GeMData(Dataset):
     def __len__(self):
         return self.dataset.shape[0]
 
+class GeMClass(Dataset):
+    def __init__(self, pm, ds):
+        '''
+        change in matrix to matrix path when really do it
+        '''
+        self.pic_matrix = pm
+        self.dataset = ds
+
+    def __getitem__(self, index):
+        return self.pic_matrix[self.dataset[index]]
+ 
+    def __len__(self):
+        return self.dataset.shape[0]
+
 
