@@ -24,7 +24,15 @@ python -m process_data.nns --dpath=ir --dimension=32 --k=20
 python train.py --dpath=ir --save_path=ir/para/ --batch_size=64 --epoch=2 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=resnet50 --scale=0.7071 --start_epoch=0
 python train.py --dpath=ir --save_path=ir/para/ --batch_size=16 --epoch=3 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=resnet50 --scale=1.4147 --start_epoch=1
 
+# download CIFAR-100 Python version from https://www.cs.toronto.edu/~kriz/cifar.html to get cifar-100-python.tar.gz
+# decompress the file:
+tar -zxvf cifar-100-python.tar.gz
 
+# make new directory 
+mkdir cifar100 cifar100/para
+# mv file into directory
+mv meta train test cifar100/
+# come back to root and run these instructions
 python -m cifar.make_data --dpath=cifar100
 python -m process_data.make_train_valid --dpath=cifar100 --iname=train_info.csv --skip=4 --ratio=25
 python train.py --dpath=cifar100 --mfile=train_image_set.npy --img_size=64 --save_path=cifar100/para/ --batch_size=256 --epoch=1 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=resnet50
