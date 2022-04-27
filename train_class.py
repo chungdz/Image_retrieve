@@ -62,7 +62,7 @@ def train(cfg, epoch, model, loader, optimizer, steps_one_epoch):
     for index, data in enum_dataloader:
         # 1. Forward
         model_in = data[:, :-1] / 255.0
-        label = data[:, :-1]
+        label = data[:, -1]
         model_in = model_in.to(0)
         label = label.to(0)
         pred = model.predict_class(model_in, cfg.img_size, scale=args.scale)
