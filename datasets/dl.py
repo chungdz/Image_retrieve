@@ -50,8 +50,10 @@ class GeMClass(Dataset):
         self.dataset = ds
 
     def __getitem__(self, index):
-        return self.pic_matrix[self.dataset[index]]
- 
+        img = self.pic_matrix[self.dataset[index][0]].reshape(-1)
+        label = self.dataset[index][1].reshape(-1)
+        return torch.cat([img, label], dim=-1)
+
     def __len__(self):
         return self.dataset.shape[0]
 
