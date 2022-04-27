@@ -153,7 +153,7 @@ class GeM(nn.Module):
         _, topk = torch.topk(cur_score, k, dim=1)
         return topk
     
-    def predict_class(self, data, l, scale=1):
+    def predict_class(self, data, l, scale=1, encoder='gem'):
 
         batch_size = data.size(0)
         data = data.reshape(batch_size, 3, l, l)
@@ -164,12 +164,19 @@ class GeM(nn.Module):
             data = ndata
 
         r1 = self.resnet(data)
-        att_w = self.sa(r1)
 
-        final_representation = torch.sum((r1 * att_w).reshape(batch_size, r1.size(1), -1), dim=-1)
-        sscore = self.fc1(final_representation)
+        if encoder == 'att':
+            att_w = self.sa(r1)
+            final_representation = torch.sum((r1 * att_w).reshape(batch_size, r1.size(1), -1), dim=-1)
+            sscore = self.fc1(final_representation)
+            return sscore
+        
+        if encoder == 'gem':
+            r1 = r1.reshape(batch_size, self.hidden_size, -1)
+            r1 = self.gem(r1)
+            sscore = self.fc1(r1)
+            return sscore
 
-        return sscore
 
     
 
