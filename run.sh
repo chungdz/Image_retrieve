@@ -41,3 +41,8 @@ python train_class.py --start_epoch=0 --dpath=cifar100 --mfile=train_image_set.n
 python build_image_db.py --dpath=cifar100 --img_size=64 --save_path=cifar100/para/model.ep1 --batch_size=1024 --input=train_image_set.npy --output=database.npy --arch=resnet50
 python build_image_db.py --dpath=cifar100 --img_size=64 --save_path=cifar100/para/model.ep1 --batch_size=1024 --input=test_image_set.npy --output=tdatabase.npy --arch=resnet50
 python -m process_data.mips_cifar
+
+python train_class.py --start_epoch=-1 --dpath=cifar100 --mfile=train_image_set.npy --img_size=64 --save_path=cifar100/para/ --batch_size=256 --epoch=1 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=resnet50
+python train.py --start_epoch=0 --dpath=cifar100 --mfile=train_image_set.npy --img_size=64 --save_path=cifar100/para/ --batch_size=256 --epoch=2 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=resnet50
+python train_class.py --start_epoch=1 --dpath=cifar100 --mfile=train_image_set.npy --img_size=64 --save_path=cifar100/para/ --batch_size=256 --epoch=3 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=resnet50
+python train_class.py --start_epoch=2 --dpath=cifar100 --mfile=train_image_set.npy --img_size=64 --save_path=cifar100/para/ --batch_size=256 --epoch=5 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=resnet50

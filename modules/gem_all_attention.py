@@ -73,7 +73,7 @@ class GeM(nn.Module):
         xpower = torch.sum(torch.pow(x, self.p), dim=-1, keepdim=False)
         gem = torch.pow(xpower / xsize + 0.1, 1 / self.p)
         return gem
-    
+
     def forward(self, data, l, valid_mode=False, scale=1):
         '''
         data for train is like
@@ -106,29 +106,27 @@ class GeM(nn.Module):
 
         r1 = data[:, 0].reshape(batch_size, 3, l, l)
         r1 = self.resnet(r1)
-        r1 = r1.reshape(batch_size, self.hidden_size, -1)
-        r1 = self.gem(r1)
-        r1 = r1.repeat(1, negc + 1).view(batch_size, negc + 1, self.hidden_size)
+        att_w = self.sa(r1)
+        r1f = torch.sum((r1 * att_w).reshape(batch_size, r1.size(1), -1), dim=-1)
+        r1 = r1f.repeat(1, negc + 1).view(batch_size, negc + 1, self.hidden_size)
+        fsize = torch.linalg.vector_norm(r1, ord=2, dim=-1, keepdim=True) + 1e-7
+        r1 = r1 / fsize
 
         r2 = data[:, 1:].reshape(batch_size * (negc + 1), 3, l, l)
         r2 = self.resnet(r2)
-        r2 = r2.reshape(batch_size, negc + 1, self.hidden_size, -1)
-        r2 = self.gem(r2)
-        r2 = r2.reshape(batch_size, negc + 1, self.hidden_size)
+        att_w2 = self.sa(r2)
+        r2f = torch.sum((r2 * att_w2).reshape(batch_size * (negc + 1), r2.size(1), -1), dim=-1)
+        r2 = r2f.reshape(batch_size, negc + 1, self.hidden_size)
+        fsize2 = torch.linalg.vector_norm(r2, ord=2, dim=-1, keepdim=True) + 1e-7
+        r2 = r2 / fsize2
 
         return torch.sum(r1 * r2, dim=-1)
     
-    def predict(self, data, l, scale_list=[], encoder='gem'):
+    def predict(self, data, l, scale_list=[]):
         batch_size = data.size(0)
         data = data.reshape(batch_size, 3, l, l)
 
-        if len(scale_list) < 1 and encoder == 'att':
-            r = self.resnet(data)
-            r = r.reshape(batch_size, self.hidden_size, -1)
-            r = self.gem(r)
-            return r
-
-        if len(scale_list) < 1 and encoder == 'gem':
+        if len(scale_list) < 1:
             r1 = self.resnet(data)
             att_w = self.sa(r1)
             final_representation = torch.sum((r1 * att_w).reshape(batch_size, r1.size(1), -1), dim=-1)
