@@ -59,6 +59,7 @@ def train(cfg, epoch, model, loader, optimizer, steps_one_epoch):
     enum_dataloader = tqdm(enumerate(loader), total=len(loader), desc="EP-{} train".format(epoch))
     mean_loss = 0
     loss_list = []
+    scale_list = [1, 1.41]
     for index, data in enum_dataloader:
         # 1. Forward
         model_in = data[:, :-1] / 255.0
@@ -66,27 +67,28 @@ def train(cfg, epoch, model, loader, optimizer, steps_one_epoch):
         model_in = model_in.to(0)
         label = label.to(0)
 
-        pred = model.predict_class(model_in, cfg.img_size, scale=args.scale)
-        loss = F.cross_entropy(pred, label)
+        for cscale in scale_list:
+            pred = model.predict_class(model_in, cfg.img_size, scale=cscale)
+            loss = F.cross_entropy(pred, label)
 
-        # 3.Backward.
-        loss.backward()
-        # try gradient clipper to avoid gradient explosion
-        # torch.nn.utils.clip_grad_norm_(model.parameters(), 0.1)
-        optimizer.step()
-        model.zero_grad()
-        # index add
-        mean_loss += loss.item()
-        loss_list.append(loss.item())
-        if str(loss.item()) == 'nan':
-            print(loss_list[-100:])
-            print(index)
-            exit()
-            
-        if index % cfg.show_batch == 0 and index > 0:
-            cur_mean_loss = mean_loss / cfg.show_batch
-            enum_dataloader.set_description("EP-{} train, batch {} loss is {}".format(epoch, index, cur_mean_loss))
-            mean_loss = 0
+            # 3.Backward.
+            loss.backward()
+            # try gradient clipper to avoid gradient explosion
+            # torch.nn.utils.clip_grad_norm_(model.parameters(), 0.1)
+            optimizer.step()
+            model.zero_grad()
+            # index add
+            mean_loss += loss.item()
+            loss_list.append(loss.item())
+            if str(loss.item()) == 'nan':
+                print(loss_list[-100:])
+                print(index)
+                exit()
+                
+            if index % cfg.show_batch == 0 and index > 0:
+                cur_mean_loss = mean_loss / cfg.show_batch
+                enum_dataloader.set_description("EP-{} train, batch {} loss is {}".format(epoch, index, cur_mean_loss))
+                mean_loss = 0
     
     torch.save(model.state_dict(), os.path.join(cfg.save_path, "model.ep{}".format(epoch)))
 
