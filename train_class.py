@@ -61,10 +61,12 @@ def train(cfg, epoch, model, loader, optimizer, steps_one_epoch):
     loss_list = []
     for index, data in enum_dataloader:
         # 1. Forward
-        data = data.to(0)
         model_in = data[:, :-1] / 255.0
+        label = data[:, :-1]
+        model_in = model_in.to(0)
+        label = label.to(0)
         pred = model.predict_class(model_in, cfg.img_size, scale=args.scale)
-        loss = F.cross_entropy(pred, data[:, -1])
+        loss = F.cross_entropy(pred, label)
 
         # 3.Backward.
         loss.backward()
