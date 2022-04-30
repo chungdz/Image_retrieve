@@ -66,7 +66,7 @@ def train(cfg, epoch, model, loader, optimizer, steps_one_epoch):
         model_in = model_in.to(0)
         label = label.to(0)
 
-        pred = model.predict_class(model_in, cfg.img_size, scale=args.scale)
+        pred = model.predict_class(model_in, cfg.img_size, scale=cfg.scale, encoder=cfg.encoder)
         loss = F.cross_entropy(pred, label)
 
         # 3.Backward.
@@ -100,7 +100,7 @@ def validate(cfg, model, valid_data_loader):
             input_data = data[:, :-1] / 255.0
             label_data = data[:, -1]
             input_data = input_data.to(0)
-            res = model.predict_class(input_data, cfg.img_size, scale=args.scale)
+            res = model.predict_class(input_data, cfg.img_size, scale=cfg.scale, encoder=cfg.encoder)
             maxidx = res.argmax(dim=-1)
             labels += label_data.cpu().numpy().tolist()
             preds += maxidx.cpu().numpy().tolist()
@@ -114,6 +114,7 @@ parser.add_argument("--epoch", default=6, type=int, help="training epoch")
 parser.add_argument("--batch_size", default=32, type=int, help="training batch size used in Pytorch DataLoader")
 parser.add_argument("--img_size", default=224, type=int, help="size of img")
 parser.add_argument("--lr", default=0.001, type=float, help="Learning rate")
+parser.add_argument("--encoder", default='gem', type=str, help="encoder type gem or att")
 parser.add_argument("--scale", default=1, type=float, help="scale of image, is scale is not 1, images will be rescaled first before training")
 parser.add_argument("--save_path", default='para', type=str, help="path to save training model parameters")
 parser.add_argument("--arch", default='resnet18', type=str, 
