@@ -122,13 +122,13 @@ class GeM(nn.Module):
         batch_size = data.size(0)
         data = data.reshape(batch_size, 3, l, l)
 
-        if len(scale_list) < 1 and encoder == 'att':
+        if len(scale_list) < 1 and encoder == 'gem':
             r = self.resnet(data)
             r = r.reshape(batch_size, self.hidden_size, -1)
             r = self.gem(r)
             return r
 
-        if len(scale_list) < 1 and encoder == 'gem':
+        if len(scale_list) < 1 and encoder == 'att':
             r1 = self.resnet(data)
             att_w = self.sa(r1)
             final_representation = torch.sum((r1 * att_w).reshape(batch_size, r1.size(1), -1), dim=-1)
