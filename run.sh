@@ -24,6 +24,11 @@ python -m process_data.nns --dpath=ir --dimension=32 --k=20
 python train.py --dpath=ir --save_path=ir/para/ --batch_size=64 --epoch=2 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=resnet50 --scale=0.7071 --start_epoch=0
 python train.py --dpath=ir --save_path=ir/para/ --batch_size=16 --epoch=3 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=resnet50 --scale=1.4147 --start_epoch=1
 
+## classification task
+python -m compcars.unify_class_name --dpath=ir
+python train_class.py --start_epoch=-1 --dpath=ir --mfile=imageset.npy --img_size=224 --save_path=ir/para/ --batch_size=64 --epoch=10 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=resnet50
+
+
 # download CIFAR-100 Python version from https://www.cs.toronto.edu/~kriz/cifar.html to get cifar-100-python.tar.gz
 # decompress the file:
 tar -zxvf cifar-100-python.tar.gz
@@ -42,7 +47,7 @@ python build_image_db.py --dpath=cifar100 --img_size=64 --save_path=cifar100/par
 python build_image_db.py --dpath=cifar100 --img_size=64 --save_path=cifar100/para/model.ep1 --batch_size=1024 --input=test_image_set.npy --output=tdatabase.npy --arch=resnet50
 python -m process_data.mips_cifar
 
-python train_class.py --start_epoch=-1 --dpath=cifar100 --mfile=train_image_set.npy --img_size=64 --save_path=cifar100/para/ --batch_size=256 --epoch=1 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=resnet50
+python train_class.py --start_epoch=-1 --dpath=cifar100 --mfile=train_image_set.npy --img_size=64 --save_path=cifar100/para/ --batch_size=256 --epoch=10 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=resnet50
 python train.py --start_epoch=0 --dpath=cifar100 --mfile=train_image_set.npy --img_size=64 --save_path=cifar100/para/ --batch_size=256 --epoch=2 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=resnet50
 python train_class.py --start_epoch=1 --dpath=cifar100 --mfile=train_image_set.npy --img_size=64 --save_path=cifar100/para/ --batch_size=256 --epoch=3 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=resnet50
 python train_class.py --start_epoch=2 --dpath=cifar100 --mfile=train_image_set.npy --img_size=64 --save_path=cifar100/para/ --batch_size=256 --epoch=5 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=resnet50
