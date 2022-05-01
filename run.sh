@@ -6,6 +6,7 @@ cd data
 cd ..
 python -m compcars.data_info --dpath=ir
 python -m compcars.test_data_info --dpath=ir
+python -m compcars.unify_class_name --dpath=ir
 python -m process_data.image_matrix --dpath=ir --image_info=car_front.csv --image_root_path=Image_data/data/image/ --mname=imageset.npy
 python -m process_data.image_matrix --dpath=ir --image_info=tindexinfo.csv --image_root_path=Image_data/sv_data/image/ --mname=test_image.npy
 python -m process_data.make_train_valid --dpath=ir
@@ -25,7 +26,7 @@ python train.py --dpath=ir --save_path=ir/para/ --batch_size=64 --epoch=2 --show
 python train.py --dpath=ir --save_path=ir/para/ --batch_size=16 --epoch=3 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=resnet50 --scale=1.4147 --start_epoch=1
 
 ## classification task
-python -m compcars.unify_class_name --dpath=ir
+python -m process_data.make_train_valid --dpath=ir
 python train_class.py --start_epoch=-1 --dpath=ir --mfile=imageset.npy --img_size=224 --save_path=ir/para/ --batch_size=64 --epoch=10 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=resnet50
 
 

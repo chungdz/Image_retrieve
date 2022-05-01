@@ -31,4 +31,8 @@ front_csv['Class'] = front_csv['Class'].map(idict)
 rear_csv['Class'] = rear_csv['Class'].map(idict)
 test_csv['Class'] = test_csv['Class'].map(idict)
 
+front_csv['Class'] = front_csv['Class'].map(idict)
+rear_csv['Class'] = rear_csv['Class'].map(idict)
+test_csv['Class'] = test_csv['Class'].map(idict)
+
 
