@@ -29,6 +29,10 @@ python train.py --dpath=ir --save_path=ir/para/ --batch_size=16 --epoch=3 --show
 python -m process_data.make_train_valid --dpath=ir
 python train_class.py --start_epoch=-1 --dpath=ir --mfile=imageset.npy --img_size=224 --save_path=ir/para/ --batch_size=64 --epoch=10 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=resnet50
 
+python build_image_db.py --dpath=ir --save_path=ir/para/model.ep18 --batch_size=64 --input=imageset.npy --output=database.npy --arch=resnet50
+python build_image_db.py --dpath=ir --save_path=ir/para/model.ep18 --batch_size=64 --input=test_image.npy --output=tdatabase.npy --arch=resnet50
+python -m process_data.mask_data --dpath=ir
+python -m process_data.mips --dpath=ir --batch_size=1024 --k=20
 
 # download CIFAR-100 Python version from https://www.cs.toronto.edu/~kriz/cifar.html to get cifar-100-python.tar.gz
 # decompress the file:

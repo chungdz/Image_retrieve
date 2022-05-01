@@ -14,6 +14,7 @@ args = parser.parse_args()
 fp = os.path.join(args.dpath, "car_front.csv")
 rp = os.path.join(args.dpath, "car_rear.csv")
 tp = os.path.join(args.dpath, "tindexinfo.csv")
+tnpy = os.path.join(args.dpath, "test.npy")
 
 front_csv = pd.read_csv(fp)
 rear_csv = pd.read_csv(rp)
@@ -31,8 +32,14 @@ front_csv['Class'] = front_csv['Class'].map(idict)
 rear_csv['Class'] = rear_csv['Class'].map(idict)
 test_csv['Class'] = test_csv['Class'].map(idict)
 
-front_csv['Class'] = front_csv['Class'].map(idict)
-rear_csv['Class'] = rear_csv['Class'].map(idict)
-test_csv['Class'] = test_csv['Class'].map(idict)
+front_csv.to_csv(fp, index=False)
+rear_csv.to_csv(rp, index=False)
+test_csv.to_csv(tp, index=False)
+
+testnp = np.load(tnpy)
+newnp = []
+for index, carm in testnp:
+    newnp.append([index, idict[carm]])
+np.save(tnpy, np.array(newnp))
 
 
