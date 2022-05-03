@@ -41,13 +41,13 @@ def run(cfg, train_dataset, valid_dataset):
     steps_one_epoch = len(train_data_loader)
     train_steps = cfg.epoch * steps_one_epoch
     print("Total train steps: ", train_steps)
-    optimizer = torch.optim.Adam(params=model.parameters(), lr=cfg.lr)
+    optimizer = torch.optim.Adam(params=model.parameters(), lr=cfg.lr * pow(cfg.lr_shrink, cfg.start_epoch + 1))
     steplr = torch.optim.lr_scheduler.StepLR(optimizer=optimizer, step_size=1, gamma=cfg.lr_shrink)
     # Training and validation
     for epoch in range(cfg.epoch):
         print("lr in this epoch:", steplr.get_last_lr())
         if epoch <= cfg.start_epoch:
-            steplr.step()
+            # steplr.step()
             continue
         train(cfg, epoch, model, train_data_loader, optimizer, steps_one_epoch)
         validate(cfg, model, valid_data_loader)
@@ -131,7 +131,7 @@ matrixp = os.path.join(args.dpath, args.mfile)
 trainsetp = os.path.join(args.dpath, "train.npy")
 validsetp = os.path.join(args.dpath, "valid.npy")
 
-args.model_info = GeMConfig()
+args.model_info = GeMConfig(args.dpath)
 args.model_info.set_arch(args.arch)
 pmatrix = torch.ByteTensor(np.load(matrixp))
 trainset = torch.LongTensor(np.load(trainsetp))

@@ -41,4 +41,20 @@ class GeMData(Dataset):
     def __len__(self):
         return self.dataset.shape[0]
 
+class GeMClass(Dataset):
+    def __init__(self, pm, ds):
+        '''
+        change in matrix to matrix path when really do it
+        '''
+        self.pic_matrix = pm
+        self.dataset = ds
+
+    def __getitem__(self, index):
+        img = self.pic_matrix[self.dataset[index][0]].reshape(-1)
+        label = self.dataset[index][1].reshape(-1)
+        return torch.cat([img, label], dim=-1)
+
+    def __len__(self):
+        return self.dataset.shape[0]
+
 

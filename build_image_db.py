@@ -19,6 +19,7 @@ parser.add_argument("--dpath", default="ir", type=str, help="root path of all da
 parser.add_argument("--batch_size", default=32, type=int, help="encoding batch size used in Pytorch DataLoader")
 parser.add_argument("--multi_scale", default=0, type=int, help="whether to use multi-scale")
 parser.add_argument("--arch", default='resnet18', type=str, help="backbone of model, should be same the training model")
+parser.add_argument("--encoder", default='gem', type=str, help="encoder type gem or att")
 parser.add_argument("--save_path", default='ir/para/model.ep0', type=str, help="where to load model parameters")
 parser.add_argument("--input", default="imageset.npy", type=str, help="image matrix")
 parser.add_argument("--output", default="database.npy", type=str, help="encoded image vectors")
@@ -34,7 +35,7 @@ indexlist = torch.arange(pmatrix.size(0))
 dataset = GeMData(pmatrix, indexlist)
 data_loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False, num_workers=6, pin_memory=True)
 print('load trained model')
-model_info = GeMConfig()
+model_info = GeMConfig(args.dpath)
 model_info.set_arch(args.arch)
 model = GeM(model_info)
 pretrained_model = torch.load(modelp, map_location='cpu')
@@ -48,9 +49,9 @@ with torch.no_grad():
         input_data = data / 255.0
         input_data = input_data.to(0)
         if args.multi_scale == 1:
-            res = model.predict(input_data, args.img_size, scale_list=[0.5, 0.7071, 1.0, 1.4147, 2.0])
+            res = model.predict(input_data, args.img_size, scale_list=[1.0, 1.4147], encoder=args.encoder)
         else:
-            res = model.predict(input_data, args.img_size)
+            res = model.predict(input_data, args.img_size, encoder=args.encoder)
         batch_res.append(res.cpu().numpy())
 
 final_matrix = np.concatenate(batch_res, axis=0)
