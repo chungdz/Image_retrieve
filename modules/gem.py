@@ -64,10 +64,17 @@ class GeM(nn.Module):
         self.sa = SpatialAttention()
         self.fc1 = nn.Linear(self.hidden_size, cfg.class_num)
     
+    # def gem(self, x):
+    #     xsize = torch.linalg.vector_norm(x, ord=2, dim=-1, keepdim=False) + 1e-7
+    #     xpower = torch.sum(torch.pow(x, self.p), dim=-1, keepdim=False)
+    #     gem = torch.pow(xpower / xsize + 0.1, 1 / self.p)
+    #     gem = self.gem_proj(gem)
+    #     gem_size = torch.linalg.vector_norm(gem, ord=2, dim=-1, keepdim=True) + 1e-7
+    #     return gem / gem_size
+    # new GEM from DELG
     def gem(self, x):
-        xsize = torch.linalg.vector_norm(x, ord=2, dim=-1, keepdim=False) + 1e-7
-        xpower = torch.sum(torch.pow(x, self.p), dim=-1, keepdim=False)
-        gem = torch.pow(xpower / xsize + 0.1, 1 / self.p)
+        xpower = torch.pow(torch.maximum(x, torch.Tensor([1e-6])), self.p)
+        gem = torch.pow(xpower.mean(dim=-1, keepdim=False), 1.0 / self.p)
         gem = self.gem_proj(gem)
         gem_size = torch.linalg.vector_norm(gem, ord=2, dim=-1, keepdim=True) + 1e-7
         return gem / gem_size

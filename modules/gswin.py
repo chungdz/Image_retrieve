@@ -29,6 +29,7 @@ class SwinFM(nn.Module):
         cfg = get_config(SwinConfig())
         self.st = build_model(cfg)
         load_pretrained(cfg, self.st)
+        # self.bn = nn.BatchNorm2d(1536)
     
     def forward(self, x):
         x = self.st.patch_embed(x)
@@ -42,6 +43,7 @@ class SwinFM(nn.Module):
         x = self.st.norm(x)  # B L C
         x = x.permute(0, 2, 1)
         x = x.reshape(-1, x.size(1), 7, 7)
+        # x = self.bn(x)
         return x
 
     
