@@ -61,6 +61,7 @@ class GeM(nn.Module):
         self.hidden_size = cfg.hidden_size
         self.gem_proj = nn.Linear(self.hidden_size, self.hidden_size)
         self.p = nn.Parameter(torch.Tensor([3]))
+        self.minimumx = nn.Parameter(torch.Tensor([1e-6]), requires_grad=False)
         self.sa = SpatialAttention()
         self.fc1 = nn.Linear(self.hidden_size, cfg.class_num)
     
@@ -73,7 +74,7 @@ class GeM(nn.Module):
     #     return gem / gem_size
     # new GEM from DELG
     def gem(self, x):
-        xpower = torch.pow(torch.maximum(x, torch.Tensor([1e-6])), self.p)
+        xpower = torch.pow(torch.maximum(x, self.minimumx), self.p)
         gem = torch.pow(xpower.mean(dim=-1, keepdim=False), 1.0 / self.p)
         gem = self.gem_proj(gem)
         gem_size = torch.linalg.vector_norm(gem, ord=2, dim=-1, keepdim=True) + 1e-7
