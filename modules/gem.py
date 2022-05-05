@@ -6,6 +6,7 @@ import torch.nn.functional as F
 from torchvision.models.vgg import vgg11
 from torchvision.models.resnet import ResNet, BasicBlock, Bottleneck, model_urls
 from torchvision._internally_replaced_utils import load_state_dict_from_url
+from .gswin import SwinFM
 
 class ResNetRaw(ResNet):
 
@@ -50,9 +51,12 @@ class GeM(nn.Module):
 
     def __init__(self, cfg):
         super(GeM, self).__init__()
-        self.resnet = ResNetRaw(cfg.arch)
-        state_dict = load_state_dict_from_url(model_urls[cfg.arch], progress=cfg.progress)
-        print("Load {} pre-trained parameters from pytorch".format(cfg.arch), self.resnet.load_state_dict(state_dict))
+        if 'resnet' in cfg.arch:
+            self.backbone = ResNetRaw(cfg.arch)
+            state_dict = load_state_dict_from_url(model_urls[cfg.arch], progress=cfg.progress)
+            print("Load {} pre-trained parameters from pytorch".format(cfg.arch), self.backbone.load_state_dict(state_dict))
+        else:
+            self.backbone = SwinFM()
         self.neg_count = cfg.neg_count
         self.hidden_size = cfg.hidden_size
         self.gem_proj = nn.Linear(self.hidden_size, self.hidden_size)
@@ -105,13 +109,13 @@ class GeM(nn.Module):
             data = ndata
 
         r1 = data[:, 0].reshape(batch_size, 3, l, l)
-        r1 = self.resnet(r1)
+        r1 = self.backbone(r1)
         r1 = r1.reshape(batch_size, self.hidden_size, -1)
         r1 = self.gem(r1)
         r1 = r1.repeat(1, negc + 1).view(batch_size, negc + 1, self.hidden_size)
 
         r2 = data[:, 1:].reshape(batch_size * (negc + 1), 3, l, l)
-        r2 = self.resnet(r2)
+        r2 = self.backbone(r2)
         r2 = r2.reshape(batch_size, negc + 1, self.hidden_size, -1)
         r2 = self.gem(r2)
         r2 = r2.reshape(batch_size, negc + 1, self.hidden_size)
@@ -123,13 +127,13 @@ class GeM(nn.Module):
         data = data.reshape(batch_size, 3, l, l)
 
         if len(scale_list) < 1 and encoder == 'gem':
-            r = self.resnet(data)
+            r = self.backbone(data)
             r = r.reshape(batch_size, self.hidden_size, -1)
             r = self.gem(r)
             return r
 
         if len(scale_list) < 1 and encoder == 'att':
-            r1 = self.resnet(data)
+            r1 = self.backbone(data)
             att_w = self.sa(r1)
             final_representation = torch.sum((r1 * att_w).reshape(batch_size, r1.size(1), -1), dim=-1)
             fsize = torch.linalg.vector_norm(final_representation, ord=2, dim=-1, keepdim=True) + 1e-7
@@ -138,7 +142,7 @@ class GeM(nn.Module):
         all_v = []
         for scale in scale_list:
             ndata = F.interpolate(data, int(round(scale * l)), mode='bilinear', align_corners=True)
-            tmp = self.resnet(ndata)
+            tmp = self.backbone(ndata)
             tmp = tmp.reshape(batch_size, self.hidden_size, -1)
             tmp = self.gem(tmp)
             all_v.append(tmp)
@@ -163,7 +167,7 @@ class GeM(nn.Module):
             l = newl
             data = ndata
 
-        r1 = self.resnet(data)
+        r1 = self.backbone(data)
 
         if encoder == 'att':
             att_w = self.sa(r1)

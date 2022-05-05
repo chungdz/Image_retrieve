@@ -4,6 +4,7 @@
 \.vs*
 /data/
 /para/
+/swin_para/
 /ir/
 /Test_GeM.ipynb
 /cifar100/
