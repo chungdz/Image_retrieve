@@ -168,7 +168,6 @@ class GeM(nn.Module):
             data = ndata
 
         r1 = self.backbone(data)
-
         if encoder == 'att':
             att_w = self.sa(r1)
             final_representation = torch.sum((r1 * att_w).reshape(batch_size, r1.size(1), -1), dim=-1)
