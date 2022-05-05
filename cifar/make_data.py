@@ -9,6 +9,8 @@ import numpy as np
 parser = argparse.ArgumentParser()
 parser.add_argument("--dpath", default="cifar100", type=str,
                         help="root path of all data")
+parser.add_argument("--img_size", default=64, type=int,
+                        help="root path of all data")
 args = parser.parse_args()
 
 tri_path = os.path.join(args.dpath, "train_info.csv")
@@ -23,7 +25,7 @@ train_set = []
 train_info = []
 for index, (label, idata) in tqdm(enumerate(zip(train[b'fine_labels'], train[b'data']))):
     original_data = idata.reshape(3, 32, 32).transpose(1, 2, 0)
-    rescaled_data = cv2.resize(original_data, (64, 64), interpolation=cv2.INTER_LINEAR)
+    rescaled_data = cv2.resize(original_data, (args.img_size, args.img_size), interpolation=cv2.INTER_LINEAR)
     train_set.append(rescaled_data)
     train_info.append([index, label])
 
@@ -34,7 +36,7 @@ test_set = []
 test_info = []
 for index, (label, idata) in tqdm(enumerate(zip(test[b'fine_labels'], test[b'data']))):
     original_data = idata.reshape(3, 32, 32).transpose(1, 2, 0)
-    rescaled_data = cv2.resize(original_data, (64, 64), interpolation=cv2.INTER_LINEAR)
+    rescaled_data = cv2.resize(original_data, (args.img_size, args.img_size), interpolation=cv2.INTER_LINEAR)
     test_set.append(rescaled_data)
     test_info.append([index, label])
 
