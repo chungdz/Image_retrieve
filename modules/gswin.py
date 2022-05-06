@@ -29,7 +29,6 @@ class MultiStageGeM(nn.Module):
         self.proj = nn.Linear(insize, outsize)
         self.p = nn.Parameter(torch.Tensor([3]))
         self.minimumx = nn.Parameter(torch.Tensor([1e-6]), requires_grad=False)
-        self.t = nn.Tanh()
     
     def forward(self, x):
         # x should be B C H*W
@@ -37,7 +36,6 @@ class MultiStageGeM(nn.Module):
         xpower = torch.pow(torch.maximum(x, self.minimumx), self.p)
         gem = torch.pow(xpower.mean(dim=-1, keepdim=False), 1.0 / self.p)
         gem = self.proj(gem)
-        gem = self.t(gem)
         return gem
 
 class SwinFM(nn.Module):
@@ -48,6 +46,10 @@ class SwinFM(nn.Module):
         cfg = get_config(scfg)
         self.st = build_model(cfg)
         load_pretrained(cfg, self.st)
+        self.a1 = nn.Parameter(torch.Tensor([0.25]))
+        self.a2 = nn.Parameter(torch.Tensor([0.25]))
+        self.a3 = nn.Parameter(torch.Tensor([0.25]))
+        self.a4 = nn.Parameter(torch.Tensor([0.25]))
         
         self.gem1 = MultiStageGeM(scfg.channels[0], scfg.hidden)
         self.gem2 = MultiStageGeM(scfg.channels[1], scfg.hidden)
@@ -72,7 +74,7 @@ class SwinFM(nn.Module):
         x = self.st.layers[3](x)
         v4 = self.gem4(x.permute(0, 2, 1))
 
-        final = v1 + v2 + v3 + v4
+        final = self.a1 * v1 + self.a2 * v2 + self.a3 * v3 + self.a4 * v4
         gem_size = torch.linalg.vector_norm(final, ord=2, dim=-1, keepdim=True) + 1e-7
 
         # x = self.st.norm(x)  # B L C
