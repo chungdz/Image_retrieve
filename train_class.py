@@ -66,7 +66,7 @@ def train(cfg, epoch, model, loader, optimizer, steps_one_epoch):
         model_in = model_in.to(0)
         label = label.to(0)
 
-        pred = model.predict_class(model_in, cfg.img_size, scale=cfg.scale, encoder=cfg.encoder)
+        pred = model.predict_class(model_in, cfg.img_size)
         loss = F.cross_entropy(pred, label)
 
         # 3.Backward.
@@ -100,7 +100,7 @@ def validate(cfg, model, valid_data_loader):
             input_data = data[:, :-1] / 255.0
             label_data = data[:, -1]
             input_data = input_data.to(0)
-            res = model.predict_class(input_data, cfg.img_size, scale=cfg.scale, encoder=cfg.encoder)
+            res = model.predict_class(input_data, cfg.img_size)
             maxidx = res.argmax(dim=-1)
             labels += label_data.cpu().numpy().tolist()
             preds += maxidx.cpu().numpy().tolist()

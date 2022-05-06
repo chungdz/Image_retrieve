@@ -48,10 +48,7 @@ with torch.no_grad():
     for data in tqdm(data_loader, total=len(data_loader), desc="generate vectors"):
         input_data = data / 255.0
         input_data = input_data.to(0)
-        if args.multi_scale == 1:
-            res = model.predict(input_data, args.img_size, scale_list=[1.0, 1.4147], encoder=args.encoder)
-        else:
-            res = model.predict(input_data, args.img_size, encoder=args.encoder)
+        res = model.predict(input_data, args.img_size)
         batch_res.append(res.cpu().numpy())
 
 final_matrix = np.concatenate(batch_res, axis=0)
