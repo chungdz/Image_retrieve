@@ -61,24 +61,25 @@ class SwinFM(nn.Module):
         x = self.st.pos_drop(x)
 
         x = self.st.layers[0](x)
-        cur_v = self.gem1(x.permute(0, 2, 1))
+        v1 = self.gem1(x.permute(0, 2, 1))
 
         x = self.st.layers[1](x)
-        cur_v += self.gem2(x.permute(0, 2, 1))
+        v2 = self.gem2(x.permute(0, 2, 1))
 
         x = self.st.layers[2](x)
-        cur_v += self.gem3(x.permute(0, 2, 1))
+        v3 = self.gem3(x.permute(0, 2, 1))
 
         x = self.st.layers[3](x)
-        cur_v += self.gem4(x.permute(0, 2, 1))
+        v4 = self.gem4(x.permute(0, 2, 1))
 
-        gem_size = torch.linalg.vector_norm(cur_v, ord=2, dim=-1, keepdim=True) + 1e-7
+        final = v1 + v2 + v3 + v4
+        gem_size = torch.linalg.vector_norm(final, ord=2, dim=-1, keepdim=True) + 1e-7
 
         # x = self.st.norm(x)  # B L C
         # x = x.permute(0, 2, 1)
         # x = x.reshape(-1, x.size(1), 7, 7)
         # x = self.bn(x)
-        return cur_v / gem_size
+        return final / gem_size
 
     
 
