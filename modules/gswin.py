@@ -36,8 +36,7 @@ class MultiStageGeM(nn.Module):
         xpower = torch.pow(torch.maximum(x, self.minimumx), self.p)
         gem = torch.pow(xpower.mean(dim=-1, keepdim=False), 1.0 / self.p)
         gem = self.proj(gem)
-        gem_size = torch.linalg.vector_norm(gem, ord=2, dim=-1, keepdim=True) + 1e-7
-        return gem / gem_size
+        return torch.tanh(gem)
 
 class SwinFM(nn.Module):
 
