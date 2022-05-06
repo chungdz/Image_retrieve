@@ -50,6 +50,14 @@ class SwinFM(nn.Module):
         self.a2 = nn.Parameter(torch.Tensor([0.25]))
         self.a3 = nn.Parameter(torch.Tensor([0.25]))
         self.a4 = nn.Parameter(torch.Tensor([0.25]))
+        # self.a1 = 0.1
+        # self.a2 = 0.2
+        # self.a3 = 0.4
+        # self.a4 = 0.8
+        self.ln1 = nn.LayerNorm(scfg.channels[0])
+        self.ln2 = nn.LayerNorm(scfg.channels[1])
+        self.ln3 = nn.LayerNorm(scfg.channels[2])
+        self.ln4 = nn.LayerNorm(scfg.channels[3])
         
         self.gem1 = MultiStageGeM(scfg.channels[0], scfg.hidden)
         self.gem2 = MultiStageGeM(scfg.channels[1], scfg.hidden)
@@ -63,16 +71,20 @@ class SwinFM(nn.Module):
         x = self.st.pos_drop(x)
 
         x = self.st.layers[0](x)
-        v1 = self.gem1(x.permute(0, 2, 1))
+        to_add = self.ln1(x)
+        v1 = self.gem1(to_add.permute(0, 2, 1))
 
         x = self.st.layers[1](x)
-        v2 = self.gem2(x.permute(0, 2, 1))
+        to_add = self.ln2(x)
+        v2 = self.gem2(to_add.permute(0, 2, 1))
 
         x = self.st.layers[2](x)
-        v3 = self.gem3(x.permute(0, 2, 1))
+        to_add = self.ln3(x)
+        v3 = self.gem3(to_add.permute(0, 2, 1))
 
         x = self.st.layers[3](x)
-        v4 = self.gem4(x.permute(0, 2, 1))
+        to_add = self.ln4(x)
+        v4 = self.gem4(to_add.permute(0, 2, 1))
 
         final = self.a1 * v1 + self.a2 * v2 + self.a3 * v3 + self.a4 * v4
         gem_size = torch.linalg.vector_norm(final, ord=2, dim=-1, keepdim=True) + 1e-7
