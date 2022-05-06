@@ -29,6 +29,7 @@ class MultiStageGeM(nn.Module):
         self.proj = nn.Linear(insize, outsize)
         self.p = nn.Parameter(torch.Tensor([3]))
         self.minimumx = nn.Parameter(torch.Tensor([1e-6]), requires_grad=False)
+        self.t = nn.Tanh()
     
     def forward(self, x):
         # x should be B C H*W
@@ -36,7 +37,7 @@ class MultiStageGeM(nn.Module):
         xpower = torch.pow(torch.maximum(x, self.minimumx), self.p)
         gem = torch.pow(xpower.mean(dim=-1, keepdim=False), 1.0 / self.p)
         gem = self.proj(gem)
-        return torch.tanh(gem)
+        return self.t(gem)
 
 class SwinFM(nn.Module):
 
