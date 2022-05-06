@@ -130,42 +130,19 @@ class GeM(nn.Module):
 
         return torch.sum(r1 * r2, dim=-1)
     
-    def predict(self, data, l, scale_list=[], encoder='gem'):
+    def predict(self, data, l):
         batch_size = data.size(0)
         data = data.reshape(batch_size, 3, l, l)
+        r = self.backbone(data)
+        return r
 
-        if len(scale_list) < 1 and encoder == 'gem':
-            r = self.backbone(data)
-            r = r.reshape(batch_size, self.hidden_size, -1)
-            r = self.gem(r)
-            return r
-
-        if len(scale_list) < 1 and encoder == 'att':
-            r1 = self.backbone(data)
-            att_w = self.sa(r1)
-            final_representation = torch.sum((r1 * att_w).reshape(batch_size, r1.size(1), -1), dim=-1)
-            fsize = torch.linalg.vector_norm(final_representation, ord=2, dim=-1, keepdim=True) + 1e-7
-            return final_representation / fsize
-        
-        all_v = []
-        for scale in scale_list:
-            ndata = F.interpolate(data, int(round(scale * l)), mode='bilinear', align_corners=True)
-            tmp = self.backbone(ndata)
-            tmp = tmp.reshape(batch_size, self.hidden_size, -1)
-            tmp = self.gem(tmp)
-            all_v.append(tmp)
-        
-        r = torch.cat(all_v, dim=-1)
-        r_size = torch.linalg.vector_norm(r, ord=2, dim=-1, keepdim=True) + 1e-7
-        return r / r_size
-    
     def mips(self, data, l, db, k=20):
         curq = self.predict(data, l)
         cur_score = torch.matmul(curq, db)
         _, topk = torch.topk(cur_score, k, dim=1)
         return topk
     
-    def predict_class(self, data, l, scale=1, encoder='gem'):
+    def predict_class(self, data, l, scale=1):
 
         batch_size = data.size(0)
         data = data.reshape(batch_size, 3, l, l)
@@ -176,17 +153,8 @@ class GeM(nn.Module):
             data = ndata
 
         r1 = self.backbone(data)
-        if encoder == 'att':
-            att_w = self.sa(r1)
-            final_representation = torch.sum((r1 * att_w).reshape(batch_size, r1.size(1), -1), dim=-1)
-            sscore = self.fc1(final_representation)
-            return sscore
-        
-        if encoder == 'gem':
-            r1 = r1.reshape(batch_size, self.hidden_size, -1)
-            r1 = self.gem(r1)
-            sscore = self.fc1(r1)
-            return sscore
+        sscore = self.fc1(r1)
+        return sscore
 
 
     
