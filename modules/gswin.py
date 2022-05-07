@@ -46,14 +46,15 @@ class SwinFM(nn.Module):
         cfg = get_config(scfg)
         self.st = build_model(cfg)
         load_pretrained(cfg, self.st)
-        self.a1 = nn.Parameter(torch.Tensor([0.25]))
-        self.a2 = nn.Parameter(torch.Tensor([0.25]))
-        self.a3 = nn.Parameter(torch.Tensor([0.25]))
-        self.a4 = nn.Parameter(torch.Tensor([0.25]))
-        # self.a1 = 0.1
-        # self.a2 = 0.2
-        # self.a3 = 0.4
-        # self.a4 = 0.8
+        self.hidden = scfg.hidden
+        # self.a1 = nn.Parameter(torch.Tensor([0.25]))
+        # self.a2 = nn.Parameter(torch.Tensor([0.25]))
+        # self.a3 = nn.Parameter(torch.Tensor([0.25]))
+        # self.a4 = nn.Parameter(torch.Tensor([0.25]))
+        self.a1 = 0.1
+        self.a2 = 0.2
+        self.a3 = 0.4
+        self.a4 = 0.8
         self.ln1 = nn.LayerNorm(scfg.channels[0])
         self.ln2 = nn.LayerNorm(scfg.channels[1])
         self.ln3 = nn.LayerNorm(scfg.channels[2])
@@ -63,6 +64,13 @@ class SwinFM(nn.Module):
         self.gem2 = MultiStageGeM(scfg.channels[1], scfg.hidden)
         self.gem3 = MultiStageGeM(scfg.channels[2], scfg.hidden)
         self.gem4 = MultiStageGeM(scfg.channels[3], scfg.hidden)
+        # self.proj = nn.Sequential(
+        #     nn.Linear(scfg.hidden * 4, scfg.hidden * 2),
+        #     nn.Tanh(),
+        #     nn.Linear(scfg.hidden * 2, 4),
+        #     nn.Sigmoid()
+        # )
+        
     
     def forward(self, x):
         x = self.st.patch_embed(x)
@@ -85,6 +93,12 @@ class SwinFM(nn.Module):
         x = self.st.layers[3](x)
         to_add = self.ln4(x)
         v4 = self.gem4(to_add.permute(0, 2, 1))
+
+        # final_cat = torch.cat([v1, v2, v3, v4], dim=-1)
+        # final_score = self.proj(final_cat)
+        # final_cat = final_cat.reshape(-1, 4, self.hidden)
+        # final = final_cat * final_score.unsqueeze(-1)
+        # final = final.sum(dim=1, keepdim=False)
 
         final = self.a1 * v1 + self.a2 * v2 + self.a3 * v3 + self.a4 * v4
         gem_size = torch.linalg.vector_norm(final, ord=2, dim=-1, keepdim=True) + 1e-7
