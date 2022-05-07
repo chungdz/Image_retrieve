@@ -1,10 +1,11 @@
 import math
 from turtle import forward
+from regex import P
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision.models.vgg import vgg11
-from torchvision.models.resnet import ResNet, BasicBlock, Bottleneck, model_urls, resnet50
+from torchvision.models.resnet import ResNet, BasicBlock, Bottleneck, model_urls, resnet50, resnet101
 from torchvision._internally_replaced_utils import load_state_dict_from_url
 from .gswin import SwinFM, MultiStageGeM
 
@@ -13,7 +14,12 @@ class ResNetRaw(nn.Module):
     def __init__(self, arch):
         super(ResNetRaw, self).__init__()
         # resnet 50
-        self.resnet = resnet50(pretrained=True)
+        if arch == 'resnet50':
+            print('load 50')
+            self.resnet = resnet50(pretrained=True)
+        elif arch == 'resnet101':
+            print('load 101')
+            self.resnet = resnet101(pretrained=True)
 
         self.a1 = 0.1
         self.a2 = 0.2
