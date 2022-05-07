@@ -56,7 +56,7 @@ for i in tqdm(range(final_matrix.shape[0]), desc='map to binary and calculate mA
             plist.append(labeled[i, :j + 1].sum() / (j + 1))
 
     if len(plist) != 0:
-        mAP_list.append(sum(plist) / 500)
+        mAP_list.append(sum(plist) / len(cur_s))
     else:
         mAP_list.append(0)
     sum_list.append(sum(plist))
