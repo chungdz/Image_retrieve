@@ -26,6 +26,8 @@ class GeMConfig():
             self.hidden_size = 512
         elif arch == 'resnet50':
             self.hidden_size = 2048
+        elif arch == 'resnet101':
+            self.hidden_size = 2048
         elif arch == 'swin':
             self.hidden_size = 1536
 
