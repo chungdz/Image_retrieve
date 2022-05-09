@@ -22,6 +22,7 @@ parser.add_argument("--arch", default='resnet18', type=str, help="backbone of mo
 parser.add_argument("--encoder", default='gem', type=str, help="encoder type gem or att")
 parser.add_argument("--save_path", default='ir/para/model.ep0', type=str, help="where to load model parameters")
 parser.add_argument("--input", default="imageset.npy", type=str, help="image matrix")
+parser.add_argument("--isM", default=1, type=int, help="whether use multi gem")
 parser.add_argument("--output", default="database.npy", type=str, help="encoded image vectors")
 parser.add_argument("--img_size", default=224, type=int, help="size of img")
 args = parser.parse_args()
@@ -37,6 +38,7 @@ data_loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False, num
 print('load trained model')
 model_info = GeMConfig(args.dpath)
 model_info.set_arch(args.arch)
+model_info.isM = args.isM
 model = GeM(model_info)
 pretrained_model = torch.load(modelp, map_location='cpu')
 print(model.load_state_dict(pretrained_model, strict=False))
