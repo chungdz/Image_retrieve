@@ -134,7 +134,7 @@ class SwinFMS(nn.Module):
         x = self.st.norm(x)  # B L C
         x = x.permute(0, 2, 1)
         
-        pooled = self.gem(self.hidden, self.hidden)
+        pooled = self.gem(x)
         pooled_size = torch.linalg.vector_norm(pooled, ord=2, dim=-1, keepdim=True) + 1e-7
 
         return pooled / pooled_size
