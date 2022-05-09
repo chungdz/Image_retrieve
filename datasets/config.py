@@ -19,6 +19,7 @@ class GeMConfig():
         self.progress = True
         self.md = json.load(open(os.path.join(dpath, 'model_num.json'), 'r'))
         self.class_num = len(self.md)
+        self.isM = True
 
     def set_arch(self, arch):
         self.arch = arch

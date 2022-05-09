@@ -111,6 +111,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--dpath", default="/mnt/e/data/", type=str,
                         help="root path of all data")
 parser.add_argument("--epoch", default=6, type=int, help="training epoch")
+parser.add_argument("--isM", default=1, type=int, help="whether use multi gem")
 parser.add_argument("--batch_size", default=32, type=int, help="training batch size used in Pytorch DataLoader")
 parser.add_argument("--img_size", default=224, type=int, help="size of img")
 parser.add_argument("--lr", default=0.001, type=float, help="Learning rate")
@@ -133,6 +134,7 @@ validsetp = os.path.join(args.dpath, "valid_for_test.npy")
 
 args.model_info = GeMConfig(args.dpath)
 args.model_info.set_arch(args.arch)
+args.model_info.isM = args.isM
 pmatrix = torch.ByteTensor(np.load(matrixp))
 trainset = torch.LongTensor(np.load(trainsetp))
 validset = torch.LongTensor(np.load(validsetp))

@@ -109,5 +109,35 @@ class SwinFM(nn.Module):
         # x = self.bn(x)
         return final / gem_size
 
+
+class SwinFMS(nn.Module):
+
+    def __init__(self):
+        super(SwinFMS, self).__init__()
+        scfg = SwinConfig()
+        cfg = get_config(scfg)
+        self.st = build_model(cfg)
+        load_pretrained(cfg, self.st)
+
+        self.hidden = scfg.hidden
+        self.gem = MultiStageGeM(self.hidden, self.hidden)
+
+    def forward(self, x):
+        x = self.st.patch_embed(x)
+        if self.st.ape:
+            x = x + self.st.absolute_pos_embed
+        x = self.st.pos_drop(x)
+
+        for layer in self.st.layers:
+            x = layer(x)
+
+        x = self.st.norm(x)  # B L C
+        x = x.permute(0, 2, 1)
+        
+        pooled = self.gem(self.hidden, self.hidden)
+        pooled_size = torch.linalg.vector_norm(pooled, ord=2, dim=-1, keepdim=True) + 1e-7
+
+        return pooled / pooled_size
+
     
 
