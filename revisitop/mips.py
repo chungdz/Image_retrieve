@@ -70,8 +70,7 @@ mdict = {
 json.dump(mdict, open(resp, "w"))
 
 common_indices = np.argsort(mAP_m_list)[-20:]
-common_pic_index = [testinput[x] for x in common_indices]
-print("highest mAP for medium", common_pic_index)
+print("highest mAP for medium", common_indices)
 
 
 
