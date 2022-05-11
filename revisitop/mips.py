@@ -25,11 +25,7 @@ resp = os.path.join(args.dpath, "mAP.json")
 print('load data')
 md = json.load(open(classp, "r"))
 image_matrix = torch.FloatTensor(np.load(imagep))
-testset = np.arange(70)
-
-testinput = testset[:, 0]
-test_class = testset[:, 1]
-dataset = GeMData(image_matrix, torch.LongTensor(testinput))
+dataset = GeMData(image_matrix, torch.LongTensor(np.arange(70)))
 data_loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False, num_workers=6, pin_memory=True)
 db_tensor = torch.FloatTensor(np.load(dbp).T).to(0)
 
