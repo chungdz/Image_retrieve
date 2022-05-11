@@ -1,5 +1,5 @@
-# download revisit oxford dictionary in http://cmp.felk.cvut.cz/revisitop/data/datasets/roxford5k/gnd_roxford5k.pkl
-# download revisit paris dictionary in http://cmp.felk.cvut.cz/revisitop/data/datasets/rparis6k/gnd_rparis6k.pkl
+# revisit oxford dictionary is from http://cmp.felk.cvut.cz/revisitop/data/datasets/roxford5k/gnd_roxford5k.pkl
+# revisit paris dictionary is from http://cmp.felk.cvut.cz/revisitop/data/datasets/rparis6k/gnd_rparis6k.pkl
 
 mkdir landmark
 cd landmark
