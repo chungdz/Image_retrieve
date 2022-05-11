@@ -13,8 +13,8 @@ parser.add_argument("--dpath", default="landmark", type=str,
                         help="root path of all data")
 parser.add_argument("--batch_size", default=1024, type=int, help="searching batch size used in Pytorch DataLoader")
 parser.add_argument("--k", default=4993, type=int, help="return all image, 4993 for oxford, 6322 for paris")
-parser.add_argument("--db_matrix", default="oxford5k_dbm.npy", type=str, help="else is paris6k_dbm.npy")
-parser.add_argument("--test_matrix", default="oxford5k_qm.npy", type=str, help="else is paris6k_qm.npy")
+parser.add_argument("--db_matrix", default="ox_database.npy", type=str, help="else is pa_database.npy")
+parser.add_argument("--test_matrix", default="ox_tdatabase.npy", type=str, help="else is pa_tdatabase.npy")
 parser.add_argument("--info_dict", default="oxford5k_info.json", type=str, help="else is paris6k_info.json")
 args = parser.parse_args()
 
