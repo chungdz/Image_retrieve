@@ -3,8 +3,13 @@
 
 mkdir landmark
 cd landmark
-mkdir oxford5k paris6k
+mkdir oxford5k paris6k SFM
 # download oxford dataset in https://www.robots.ox.ac.uk/~vgg/data/oxbuildings/oxbuild_images-v1.tgz
 # download paris dataset in https://www.robots.ox.ac.uk/~vgg/data/parisbuildings/paris_1-v1.tgz and https://www.robots.ox.ac.uk/~vgg/data/parisbuildings/paris_2-v1.tgz
-# decompress the two datasets and mv all images into two folds separately
+# decompress the two datasets and mv all images into two folds separately 
+# download SFM dataset in http://cmp.felk.cvut.cz/cnnimageretrieval/data/train/ims/ims.tar.gz
+# decompress it into SFM
+# download python dictionary from http://cmp.felk.cvut.cz/cnnimageretrieval/data/train/dbs/retrieval-SfM-120k.pkl
+# save it in the landmark
+
 
