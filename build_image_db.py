@@ -41,7 +41,7 @@ model_info.set_arch(args.arch)
 model_info.isM = args.isM
 model = GeM(model_info)
 pretrained_model = torch.load(modelp, map_location='cpu')
-print(model.load_state_dict(pretrained_model, strict=False))
+print('load trained parameters', model.load_state_dict(pretrained_model, strict=False))
 model.to(0)
 
 model.eval()  

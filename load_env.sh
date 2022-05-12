@@ -12,6 +12,9 @@ cp -r Image_retrieve/ ~/
 cd /mnt/ssh_files/
 cp * ~/.ssh/
 ssh -T git@github.com
+# 加载ResNet的pretrain的参数
+cd /mnt
+cp resnext101_32x8d-8ba56ff5.pth /root/.cache/torch/hub/checkpoints/
 
 
 # 保存
