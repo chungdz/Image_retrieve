@@ -1,5 +1,7 @@
 python -m revisitop.make_test_files --dname=oxford5k --dpath=landmark
 python -m revisitop.make_test_files --dname=paris6k --dpath=landmark
+python -m revisitop.make_train_info
+python -m process_data.make_train_valid --dpath=landmark --ratio=16 --iname=train_info.csv --skip=10
 
 # Swin GeM 224 
 # oxford

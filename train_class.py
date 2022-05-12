@@ -126,6 +126,7 @@ parser.add_argument("--start_epoch", default=-1, type=int, help='''whether to st
                             or load parameter saved before and continue training. For example, if start_epoch=0, then model will load parameter 
                             save_path/model.ep0 and start the second epoch of training''')
 parser.add_argument("--mfile", default="imageset.npy", type=str)
+parser.add_argument("--train_num", default=1, type=int, help="training file number")
 args = parser.parse_args()
 print('load data')
 matrixp = os.path.join(args.dpath, args.mfile)
@@ -135,8 +136,15 @@ validsetp = os.path.join(args.dpath, "valid_for_test.npy")
 args.model_info = GeMConfig(args.dpath)
 args.model_info.set_arch(args.arch)
 args.model_info.isM = args.isM
-pmatrix = torch.ByteTensor(np.load(matrixp))
 trainset = torch.LongTensor(np.load(trainsetp))
+if args.train_num == 1:
+    pmatrix = torch.ByteTensor(np.load(matrixp))
+else:
+    nplist = []
+    for fidx in range(args.train_num):
+        cpath = os.path.join(args.dpath, 'trainset', 'train_image_set' + str(fidx) + '.npy')
+        nplist.append(np.load(cpath))
+    pmatrix = torch.ByteTensor(np.concatenate(nplist, axis=0))
 validset = torch.LongTensor(np.load(validsetp))
 
 train_dataset = GeMClass(pmatrix, trainset)
