@@ -74,6 +74,9 @@ for carm_index, pic_set in tqdm(cdict.items(), total=len(cdict), desc='make trai
 
     for pic_index in train_list:
         train_set_class.append([pic_index, carm_index])
+    
+    for pidx in valid_list:
+        test_set.append([pidx, carm_index])
 
     if len(pic_set) < args.min_len:
         discarded.append(int(carm_index))
@@ -90,9 +93,6 @@ for carm_index, pic_set in tqdm(cdict.items(), total=len(cdict), desc='make trai
         new_sample_neg.append(0)
         valid_set.append(new_sample_pos)
         valid_set.append(new_sample_neg)
-    
-    for pidx in valid_list:
-        test_set.append([pidx, carm_index])
 
 train_set = np.array(train_set)
 random.shuffle(train_set_class)
