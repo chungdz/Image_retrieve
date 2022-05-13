@@ -141,6 +141,7 @@ if args.train_num == 1:
     pmatrix = torch.ByteTensor(np.load(matrixp))
 else:
     nplist = []
+    print('load {} files for training'.format(args.train_num))
     for fidx in range(args.train_num):
         cpath = os.path.join(args.dpath, 'trainset', 'train_image_set' + str(fidx) + '.npy')
         nplist.append(np.load(cpath))
