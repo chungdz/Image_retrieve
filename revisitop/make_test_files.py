@@ -5,6 +5,7 @@ from tqdm import tqdm
 import pickle
 import json
 import cv2
+import pandas as pd
 import numpy as np
 
 parser = argparse.ArgumentParser()
@@ -21,6 +22,7 @@ dict_path = os.path.join('revisitop', 'gnd_r{}.pkl'.format(args.dname))
 qm_path = os.path.join(args.dpath, '{}_qm.npy'.format(args.dname))
 dbm_path = os.path.join(args.dpath, '{}_dbm.npy'.format(args.dname))
 info_path = os.path.join(args.dpath, '{}_info.json'.format(args.dname))
+trainp = os.path.join(args.dpath, '{}_train.csv'.format(args.dname))
 
 cfg = pickle.load(open(dict_path, 'rb'))
 
@@ -35,6 +37,8 @@ for img_name in tqdm(cfg['qimlist'], desc='process query images and resize'):
 qm = np.stack(query_list, axis=0)
 
 db_list = []
+info_list = []
+idx = 0
 for img_name in tqdm(cfg['imlist'], desc='process database images and resize'):
     img_path = os.path.join(img_folder, img_name + '.jpg')
     img = Image.open(open(img_path, 'rb')).convert('RGB')
@@ -42,12 +46,21 @@ for img_name in tqdm(cfg['imlist'], desc='process database images and resize'):
     niarray = cv2.resize(iarray, (args.img_size, args.img_size), interpolation=cv2.INTER_LINEAR)
     niarray = niarray.transpose(2, 0, 1)
     db_list.append(niarray)
+
+    arr = img_name.split('_')
+    classn = '_'.join(arr[:-1])
+    info_list.append([idx, img_name, classn, img_path])
+    idx += 1
+
+traindf = pd.DataFrame(info_list, columns=['Index', 'img_name', 'Class', 'img_path'])
+traindf.to_csv(trainp, index=None)
 dbm = np.stack(db_list, axis=0)
 
-print(qm.shape, dbm.shape)
+print(qm.shape, dbm.shape, traindf.shape)
 
 json.dump(cfg['gnd'], open(info_path, 'w', encoding='utf8'))
 np.save(qm_path, qm)
 np.save(dbm_path, dbm)
+
 
 
