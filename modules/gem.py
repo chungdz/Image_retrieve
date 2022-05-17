@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from .gswin import SwinFM, SwinFMS
 from .gresnet import ResNetRaw, ResNetRawS
-from .gdeit import DeiTRaw
+from .gdeit import DeiTRaw, DeiTGeM
 
 class GeM(nn.Module):
 
@@ -17,8 +17,11 @@ class GeM(nn.Module):
                 print('load single stage GeM ResNet')
                 self.backbone = ResNetRawS(cfg.arch)
         elif 'deit' == cfg.arch:
-                print('load deit')
-                self.backbone = DeiTRaw()
+            print('load deit')
+            self.backbone = DeiTRaw()
+        elif 'deit' in cfg.arch:
+            print('load deit gem')
+            self.backbone = DeiTGeM()
         else:
             if cfg.isM:
                 print('load multi stage GeM Swin Transformer')
