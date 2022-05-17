@@ -19,15 +19,18 @@ class DeiTRaw(nn.Module):
 
 class DeiTGeM(nn.Module):
 
-    def __init__(self):
+    def __init__(self, cfg):
         super(DeiTGeM, self).__init__()
         self.transformer = DeiTModel.from_pretrained('facebook/deit-base-distilled-patch16-224')
+        self.hidden = cfg.hidden_size
+        self.gem = MultiStageGeM(self.hidden, self.hidden)
     
     def forward(self, x):
         
-        x = self.transformer(x)
-        all_hidden = x.hidden_states
-        print(all_hidden.size())
-        
-
-        return all_hidden
+        deit_output = self.transformer(x, output_hidden_states=True)
+        all_hidden = deit_output.hidden_states
+        last_hidden = all_hidden[-1]
+        x = last_hidden.permute(0, 2, 1)
+        pooled = self.gem(x)
+        pooled_size = torch.linalg.vector_norm(pooled, ord=2, dim=-1, keepdim=True) + 1e-7
+        return pooled / pooled_size

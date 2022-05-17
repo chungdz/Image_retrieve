@@ -21,7 +21,7 @@ class GeM(nn.Module):
             self.backbone = DeiTRaw()
         elif 'deit' in cfg.arch:
             print('load deit gem')
-            self.backbone = DeiTGeM()
+            self.backbone = DeiTGeM(cfg)
         else:
             if cfg.isM:
                 print('load multi stage GeM Swin Transformer')
