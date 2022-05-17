@@ -4,7 +4,7 @@ from transformers import DeiTModel, DeiTConfig
 
 class DeiTRaw(nn.Module):
 
-    def __init__(self, cfg):
+    def __init__(self):
         super(DeiTRaw, self).__init__()
         self.transformer = DeiTModel.from_pretrained('facebook/deit-base-distilled-patch16-224')
     
