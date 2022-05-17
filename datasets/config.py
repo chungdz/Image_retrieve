@@ -31,6 +31,8 @@ class GeMConfig():
             self.hidden_size = 2048
         elif arch == 'swin':
             self.hidden_size = 1536
+        elif arch == 'deit':
+            self.hidden_size = 768
 
 class SwinConfig:
     def __init__(self):
