@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torchvision.models.vgg import vgg11
 from torchvision.models.resnet import ResNet, BasicBlock, Bottleneck, model_urls, resnet50, resnet101
-from torchvision._internally_replaced_utils import load_state_dict_from_url
+# from torchvision._internally_replaced_utils import load_state_dict_from_url
 from .gswin import MultiStageGeM
 
 class ResNetRaw(nn.Module):
