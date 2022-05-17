@@ -26,6 +26,8 @@ python build_image_db.py --dpath=cifar100 --img_size=224 --save_path=cifar100/pa
 python build_image_db.py --dpath=cifar100 --img_size=224 --save_path=cifar100/para/model.ep3 --batch_size=256 --input=test_image_set.npy --output=tdatabase.npy --arch=swin --encoder=gem
 # DeiT + GeM 244 244
 python train_class.py --start_epoch=-1 --dpath=cifar100 --mfile=train_image_set.npy --img_size=224 --save_path=cifar100/para/ --batch_size=64 --epoch=10 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=deit --encoder=gem
+python build_image_db.py --dpath=cifar100 --img_size=224 --save_path=cifar100/para/model.ep6 --batch_size=256 --input=train_image_set.npy --output=database.npy --arch=deit --encoder=gem
+python build_image_db.py --dpath=cifar100 --img_size=224 --save_path=cifar100/para/model.ep6 --batch_size=256 --input=test_image_set.npy --output=tdatabase.npy --arch=deit --encoder=gem
 # evaluate
 python -m process_data.mips_cifar
 
