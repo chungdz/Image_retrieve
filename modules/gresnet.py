@@ -25,10 +25,10 @@ class ResNetRaw(nn.Module):
         self.sizelist = [256, 512, 1024, 2048]
         self.hidden = 2048
 
-        self.ln1 = nn.LayerNorm(self.sizelist[0])
-        self.ln2 = nn.LayerNorm(self.sizelist[1])
-        self.ln3 = nn.LayerNorm(self.sizelist[2])
-        self.ln4 = nn.LayerNorm(self.sizelist[3])
+        # self.ln1 = nn.LayerNorm(self.sizelist[0])
+        # self.ln2 = nn.LayerNorm(self.sizelist[1])
+        # self.ln3 = nn.LayerNorm(self.sizelist[2])
+        # self.ln4 = nn.LayerNorm(self.sizelist[3])
         
         self.gem1 = MultiStageGeM(self.sizelist[0], self.hidden)
         self.gem2 = MultiStageGeM(self.sizelist[1], self.hidden)
@@ -50,23 +50,27 @@ class ResNetRaw(nn.Module):
 
         x = self.resnet.layer1(x)
         to_add = x.reshape(batch_size, self.sizelist[0], -1)
-        to_add = self.ln1(to_add.permute(0, 2, 1))
-        v1 = self.gem1(to_add.permute(0, 2, 1))
+        # to_add = self.ln1(to_add.permute(0, 2, 1))
+        # v1 = self.gem1(to_add.permute(0, 2, 1))
+        v1 = self.gem1(to_add)
 
         x = self.resnet.layer2(x)
         to_add = x.reshape(batch_size, self.sizelist[1], -1)
-        to_add = self.ln2(to_add.permute(0, 2, 1))
-        v2 = self.gem2(to_add.permute(0, 2, 1))
+        # to_add = self.ln2(to_add.permute(0, 2, 1))
+        # v2 = self.gem2(to_add.permute(0, 2, 1))
+        v2 = self.gem2(to_add)
 
         x = self.resnet.layer3(x)
         to_add = x.reshape(batch_size, self.sizelist[2], -1)
-        to_add = self.ln3(to_add.permute(0, 2, 1))
-        v3 = self.gem3(to_add.permute(0, 2, 1))
+        # to_add = self.ln3(to_add.permute(0, 2, 1))
+        # v3 = self.gem3(to_add.permute(0, 2, 1))
+        v3 = self.gem3(to_add)
 
         x = self.resnet.layer4(x)
         to_add = x.reshape(batch_size, self.sizelist[3], -1)
-        to_add = self.ln4(to_add.permute(0, 2, 1))
-        v4 = self.gem4(to_add.permute(0, 2, 1))
+        # to_add = self.ln4(to_add.permute(0, 2, 1))
+        # v4 = self.gem4(to_add.permute(0, 2, 1))
+        v4 = self.gem4(to_add)
 
         final = self.a1 * v1 + self.a2 * v2 + self.a3 * v3 + self.a4 * v4
         gem_size = torch.linalg.vector_norm(final, ord=2, dim=-1, keepdim=True) + 1e-7
