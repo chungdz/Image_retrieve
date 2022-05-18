@@ -4,6 +4,7 @@ import torch.nn.functional as F
 from .gswin import SwinFM, SwinFMS
 from .gresnet import ResNetRaw, ResNetRawS
 from .gdeit import DeiTRaw, DeiTGeM, DeiTMultiGeM
+from .gmvit import MViTRaw
 
 class GeM(nn.Module):
 
@@ -25,13 +26,17 @@ class GeM(nn.Module):
         elif 'deitmulti' == cfg.arch:
             print('load deit multi gem')
             self.backbone = DeiTMultiGeM(cfg)
-        else:
+        elif 'swin' == cfg.arch:
             if cfg.isM:
                 print('load multi stage GeM Swin Transformer')
                 self.backbone = SwinFM()
             else:
                 print('load single stage GeM Swin Transformer')
                 self.backbone = SwinFMS()
+        elif 'mvit' == cfg.arch:
+            print('load MViT CLS')
+            self.backbone = MViTRaw(cfg)
+        
         self.neg_count = cfg.neg_count
         self.hidden_size = cfg.hidden_size
         self.fc1 = nn.Linear(self.hidden_size, cfg.class_num)
