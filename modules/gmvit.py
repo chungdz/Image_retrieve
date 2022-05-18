@@ -35,7 +35,7 @@ class MViTRaw(nn.Module):
 class MViTGeM(nn.Module):
 
     def __init__(self, cfg) -> None:
-        super(MViTRaw, self).__init__()
+        super(MViTGeM, self).__init__()
         # load backbone
         model_info = get_cfg()
         model_info.merge_from_file(cfg.model_settings_path)
