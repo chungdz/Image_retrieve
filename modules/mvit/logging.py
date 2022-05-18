@@ -12,8 +12,8 @@ import os
 import sys
 import json
 
-import slowfast.utils.distributed as du
-from slowfast.utils.env import pathmgr
+from . import distributed as du
+from .env import pathmgr
 
 
 def _suppress_print():

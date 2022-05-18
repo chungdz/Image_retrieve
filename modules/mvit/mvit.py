@@ -269,10 +269,10 @@ class MViT(nn.Module):
             x = self.norm_stem(x)
 
         thw = [T, H, W]
-        all_hidden = [x]
+        all_hidden = [[x, thw]]
         for blk in self.blocks:
             x, thw = blk(x, thw)
-            all_hidden.append(x)
+            all_hidden.append([x, thw])
 
         # x = self.norm(x)
         # if self.cls_embed_on:

@@ -1,5 +1,3 @@
-import math
-from turtle import forward
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -73,6 +71,13 @@ class SwinFM(nn.Module):
         
     
     def forward(self, x):
+        '''
+        torch.Size([32, 3136, 192])
+        torch.Size([32, 784, 384])
+        torch.Size([32, 196, 768])
+        torch.Size([32, 49, 1536])
+        torch.Size([32, 49, 1536])
+        '''
         x = self.st.patch_embed(x)
         if self.st.ape:
             x = x + self.st.absolute_pos_embed
