@@ -42,7 +42,7 @@ def run(cfg, train_dataset, valid_dataset):
     steps_one_epoch = len(train_data_loader)
     train_steps = cfg.epoch * steps_one_epoch
     print("Total train steps: ", train_steps)
-    optimizer = torch.optim.Adam(params=model.parameters(), lr=cfg.lr * pow(cfg.lr_shrink, cfg.start_epoch + 1))
+    optimizer = torch.optim.AdamW(params=model.parameters(), lr=cfg.lr * pow(cfg.lr_shrink, cfg.start_epoch + 1))
     steplr = torch.optim.lr_scheduler.StepLR(optimizer=optimizer, step_size=1, gamma=cfg.lr_shrink)
     # Training and validation
     for epoch in range(cfg.epoch):
