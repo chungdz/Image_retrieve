@@ -6,6 +6,5 @@ mkdir swin_para
 # move three files into swin_para
 
 # download parameter files for ImageNet from website https://github.com/facebookresearch/SlowFast/blob/main/MODEL_ZOO.md
-# download ymal config files from https://github.com/facebookresearch/SlowFast/blob/main/configs/ImageNet/MVIT_B_16_CONV.yaml
 mkdir mvit_para
-# move two files into mvit_para
+# move file into mvit_para

@@ -34,7 +34,7 @@ class GeMConfig():
         elif 'deit' in arch:
             self.hidden_size = 768
         elif 'mvit' in arch:
-            self.model_settings_path = 'mvit_para/MVIT_B_16_CONV.yaml'
+            self.model_settings_path = 'modules/mvit/MVIT_B_16_CONV.yaml'
             self.model_pretrained_path = 'mvit_para/IN1K_MVIT_B_16_CONV.pyth'
             self.hidden_size = 768
             self.hidden_list = [197, 197, 197, 50]
