@@ -17,11 +17,11 @@ python build_image_db.py --dpath=cifar100 --img_size=224 --save_path=cifar100/pa
 python train_class.py --start_epoch=-1 --dpath=cifar100 --mfile=train_image_set.npy --img_size=224 --save_path=cifar100/para/ --batch_size=64 --epoch=10 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=swin --encoder=gem
 python build_image_db.py --dpath=cifar100 --img_size=224 --save_path=cifar100/para/model.ep3 --batch_size=256 --input=train_image_set.npy --output=database.npy --arch=swin --encoder=gem
 python build_image_db.py --dpath=cifar100 --img_size=224 --save_path=cifar100/para/model.ep3 --batch_size=256 --input=test_image_set.npy --output=tdatabase.npy --arch=swin --encoder=gem
-# DeiT + CLS 244 244
+# DeiT + CLS 224 224
 python train_class.py --start_epoch=-1 --dpath=cifar100 --mfile=train_image_set.npy --img_size=224 --save_path=cifar100/para/ --batch_size=64 --epoch=10 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=deit --encoder=gem
 python build_image_db.py --dpath=cifar100 --img_size=224 --save_path=cifar100/para/model.ep6 --batch_size=256 --input=train_image_set.npy --output=database.npy --arch=deit --encoder=gem
 python build_image_db.py --dpath=cifar100 --img_size=224 --save_path=cifar100/para/model.ep6 --batch_size=256 --input=test_image_set.npy --output=tdatabase.npy --arch=deit --encoder=gem
-# DeiT + Single GeM 244 244
+# DeiT + Single GeM 224 224
 python train_class.py --start_epoch=-1 --dpath=cifar100 --mfile=train_image_set.npy --img_size=224 --save_path=cifar100/para/ --batch_size=64 --epoch=10 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=deitgem --encoder=gem
 python build_image_db.py --dpath=cifar100 --img_size=224 --save_path=cifar100/para/model.ep5 --batch_size=256 --input=train_image_set.npy --output=database.npy --arch=deitgem --encoder=gem
 python build_image_db.py --dpath=cifar100 --img_size=224 --save_path=cifar100/para/model.ep5 --batch_size=256 --input=test_image_set.npy --output=tdatabase.npy --arch=deitgem --encoder=gem
@@ -29,10 +29,14 @@ python build_image_db.py --dpath=cifar100 --img_size=224 --save_path=cifar100/pa
 python train_class.py --start_epoch=-1 --dpath=cifar100 --mfile=train_image_set.npy --img_size=224 --save_path=cifar100/para/ --batch_size=64 --epoch=10 --show_batch=5 --lr=0.0001 --lr_shrink=0.9 --arch=deitmulti --encoder=gem
 python build_image_db.py --dpath=cifar100 --img_size=224 --save_path=cifar100/para/model.ep6 --batch_size=256 --input=train_image_set.npy --output=database.npy --arch=deitmulti --encoder=gem
 python build_image_db.py --dpath=cifar100 --img_size=224 --save_path=cifar100/para/model.ep6 --batch_size=256 --input=test_image_set.npy --output=tdatabase.npy --arch=deitmulti --encoder=gem
-# MViT + CLS 244 244
+# MViT + CLS 224 224
 python train_class.py --start_epoch=-1 --dpath=cifar100 --mfile=train_image_set.npy --img_size=224 --save_path=cifar100/para/ --batch_size=64 --epoch=15 --show_batch=5 --lr=0.0001 --lr_shrink=0.95 --arch=mvit
 python build_image_db.py --dpath=cifar100 --img_size=224 --save_path=cifar100/para/model.ep12 --batch_size=256 --input=train_image_set.npy --output=database.npy --arch=mvit
 python build_image_db.py --dpath=cifar100 --img_size=224 --save_path=cifar100/para/model.ep12 --batch_size=256 --input=test_image_set.npy --output=tdatabase.npy --arch=mvit
+# MViT + GeM 224 224
+python train_class.py --start_epoch=-1 --dpath=cifar100 --mfile=train_image_set.npy --img_size=224 --save_path=cifar100/para/ --batch_size=64 --epoch=15 --show_batch=5 --lr=0.0001 --lr_shrink=0.95 --arch=mvitgem
+python build_image_db.py --dpath=cifar100 --img_size=224 --save_path=cifar100/para/model.ep9 --batch_size=256 --input=train_image_set.npy --output=database.npy --arch=mvitgem
+python build_image_db.py --dpath=cifar100 --img_size=224 --save_path=cifar100/para/model.ep9 --batch_size=256 --input=test_image_set.npy --output=tdatabase.npy --arch=mvitgem
 # evaluate
 python -m process_data.mips_cifar
 

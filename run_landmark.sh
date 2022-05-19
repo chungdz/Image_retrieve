@@ -117,3 +117,14 @@ python -m revisitop.mips --db_matrix=ox_database.npy --test_matrix=ox_tdatabase.
 python build_image_db.py --dpath=landmark --img_size=224 --save_path=landmark/para/model.ep8 --batch_size=256 --input=paris6k_dbm.npy --output=pa_database.npy --arch=mvit
 python build_image_db.py --dpath=landmark --img_size=224 --save_path=landmark/para/model.ep8 --batch_size=256 --input=paris6k_qm.npy --output=pa_tdatabase.npy --arch=mvit
 python -m revisitop.mips --db_matrix=pa_database.npy --test_matrix=pa_tdatabase.npy --info_dict=paris6k_info.json
+
+# MViT GeM
+python train_class.py --start_epoch=-1 --dpath=landmark --train_num=6 --img_size=224 --save_path=landmark/para/ --batch_size=64 --epoch=8 --show_batch=5 --lr=0.0001 --lr_shrink=0.95 --arch=mvitgem
+# oxford
+python build_image_db.py --dpath=landmark --img_size=224 --save_path=landmark/para/model.ep8 --batch_size=256 --input=oxford5k_dbm.npy --output=ox_database.npy --arch=mvitgem
+python build_image_db.py --dpath=landmark --img_size=224 --save_path=landmark/para/model.ep8 --batch_size=256 --input=oxford5k_qm.npy --output=ox_tdatabase.npy --arch=mvitgem
+python -m revisitop.mips --db_matrix=ox_database.npy --test_matrix=ox_tdatabase.npy --info_dict=oxford5k_info.json
+# paris
+python build_image_db.py --dpath=landmark --img_size=224 --save_path=landmark/para/model.ep8 --batch_size=256 --input=paris6k_dbm.npy --output=pa_database.npy --arch=mvitgem
+python build_image_db.py --dpath=landmark --img_size=224 --save_path=landmark/para/model.ep8 --batch_size=256 --input=paris6k_qm.npy --output=pa_tdatabase.npy --arch=mvitgem
+python -m revisitop.mips --db_matrix=pa_database.npy --test_matrix=pa_tdatabase.npy --info_dict=paris6k_info.json

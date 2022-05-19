@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from .gswin import SwinFM, SwinFMS
 from .gresnet import ResNetRaw, ResNetRawS
 from .gdeit import DeiTRaw, DeiTGeM, DeiTMultiGeM
-from .gmvit import MViTRaw, MViTGeM
+from .gmvit import MViTRaw, MViTGeM, MViTMulti
 
 class GeM(nn.Module):
 
@@ -39,6 +39,9 @@ class GeM(nn.Module):
         elif 'mvitgem' == cfg.arch:
             print('load MViT Single GeM')
             self.backbone = MViTGeM(cfg)
+        elif 'mvitmulti' == cfg.arch:
+            print('load MViT Multi GeM')
+            self.backbone = MViTMulti(cfg)
         
         self.neg_count = cfg.neg_count
         self.hidden_size = cfg.hidden_size
