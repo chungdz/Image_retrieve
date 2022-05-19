@@ -11,9 +11,9 @@ import logging
 import os
 import sys
 import json
+from iopath.common.file_io import g_pathmgr
 
 from . import distributed as du
-from .env import pathmgr
 
 
 def _suppress_print():
@@ -30,7 +30,7 @@ def _suppress_print():
 @functools.lru_cache(maxsize=None)
 def _cached_log_stream(filename):
     # Use 1K buffer if writing to cloud storage.
-    io = pathmgr.open(
+    io = g_pathmgr.open(
         filename, "a", buffering=1024 if "://" in filename else -1
     )
     atexit.register(io.close)
@@ -56,7 +56,7 @@ def setup_logging(output_dir=None):
     logger.setLevel(logging.DEBUG)
     logger.propagate = False
     plain_formatter = logging.Formatter(
-        "[%(asctime)s][%(levelname)s] %(filename)s: %(lineno)4d: %(message)s",
+        "[%(asctime)s][%(levelname)s] %(filename)s: %(lineno)3d: %(message)s",
         datefmt="%m/%d %H:%M:%S",
     )
 
@@ -84,27 +84,16 @@ def get_logger(name):
     return logging.getLogger(name)
 
 
-def log_json_stats(stats, output_dir=None):
+def log_json_stats(stats):
     """
     Logs json stats.
     Args:
         stats (dict): a dictionary of statistical information to log.
     """
     stats = {
-        k: decimal.Decimal("{:.3f}".format(v)) if isinstance(v, float) else v
+        k: decimal.Decimal("{:.5f}".format(v)) if isinstance(v, float) else v
         for k, v in stats.items()
     }
-    json_stats = json.dumps(stats, sort_keys=True, use_decimal=True)
+    json_stats = simplejson.dumps(stats, sort_keys=True, use_decimal=True)
     logger = get_logger(__name__)
     logger.info("json_stats: {:s}".format(json_stats))
-    if du.is_root_proc() and output_dir:
-        filename = os.path.join(output_dir, "json_stats.log")
-        try:
-            with pathmgr.open(
-                filename, "a", buffering=1024 if "://" in filename else -1
-            ) as f:
-                f.write("json_stats: {:s}\n".format(json_stats))
-        except Exception:
-            logger.info(
-                "Failed to write to json_stats.log: {}".format(json_stats)
-            )
