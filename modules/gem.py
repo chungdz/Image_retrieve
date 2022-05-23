@@ -51,6 +51,21 @@ class SpatialAttention(nn.Module):
         att = torch.sigmoid(self.conv(cp))
         return att
 
+class mixedPool(nn.Module):
+    def __init__(self,kernel_size, stride, padding=0, alpha=0.5):
+        # nn.Module.__init__(self)
+        super(mixedPool, self).__init__()
+        alpha = torch.FloatTensor([alpha])
+        self.alpha = nn.Parameter(alpha)  # nn.Parameter is special Variable
+        self.kernel_size = kernel_size
+        self.stride = stride
+        self.padding = padding
+
+    def forward(self, x):
+        x = self.alpha * F.max_pool2d(x, self.kernel_size, self.stride, self.padding) + (
+                    1 - self.alpha) * F.avg_pool2d(x, self.kernel_size, self.stride, self.padding)
+        return x
+
 class GeM(nn.Module):
 
     def __init__(self, cfg):
@@ -68,7 +83,7 @@ class GeM(nn.Module):
         self.minimumx = nn.Parameter(torch.Tensor([1e-6]), requires_grad=False)
         self.sa = SpatialAttention()
         self.fc1 = nn.Linear(self.hidden_size, cfg.class_num)
-    
+	self.mp = mixedPool()    
     # def gem(self, x):
     #     xsize = torch.linalg.vector_norm(x, ord=2, dim=-1, keepdim=False) + 1e-7
     #     xpower = torch.sum(torch.pow(x, self.p), dim=-1, keepdim=False)
@@ -150,6 +165,13 @@ class GeM(nn.Module):
             final_representation = torch.sum((r1 * att_w).reshape(batch_size, r1.size(1), -1), dim=-1)
             fsize = torch.linalg.vector_norm(final_representation, ord=2, dim=-1, keepdim=True) + 1e-7
             return final_representation / fsize
+
+	if len(scale_list) < 1 and encoder == 'mixpool':
+            r1 = self.backbone(data)
+            mix_w = self.mp(r1)
+            final_representation = torch.sum((r1 * mix_w).reshape(batch_size, r1.size(1), -1), dim=-1)
+            msize = torch.linalg.vector_norm(final_representation, ord=2, dim=-1, keepdim=True) + 1e-7
+            return final_representation / msize
         
         all_v = []
         for scale in scale_list:
@@ -190,6 +212,12 @@ class GeM(nn.Module):
             r1 = r1.reshape(batch_size, self.hidden_size, -1)
             r1 = self.gem(r1)
             sscore = self.fc1(r1)
+            return sscore
+
+	if encoder == 'mixpool':
+            mix_w = self.mp(r1)
+            final_representation = torch.sum((r1 * mix_w).reshape(batch_size, r1.size(1), -1), dim=-1)
+            sscore = self.fc1(final_representation)
             return sscore
 
 
