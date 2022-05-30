@@ -59,6 +59,7 @@ class SwinConfig:
         self.throughput = True
         self.local_rank=0
         self.channels = [384, 768, 1536, 1536]
+        self.resolution = [28, 14, 7, 7]
         self.hidden = 1536
 
 
