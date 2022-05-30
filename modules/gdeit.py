@@ -42,31 +42,17 @@ class DeiTMultiGeM(nn.Module):
         self.transformer = DeiTModel.from_pretrained('facebook/deit-base-distilled-patch16-224')
         self.hidden = cfg.hidden_size
 
-        self.gem1 = MultiStageGeM(self.hidden, self.hidden)
-        self.gem2 = MultiStageGeM(self.hidden, self.hidden)
-        self.gem3 = MultiStageGeM(self.hidden, self.hidden)
-        self.gem4 = MultiStageGeM(self.hidden, self.hidden)
-
-        self.a1 = 0.1
-        self.a2 = 0.2
-        self.a3 = 0.4
-        self.a4 = 0.8
+        self.gems = nn.ModuleList([MultiStageGeM(self.hidden, self.hidden) for _ in range(13)])
     
     def forward(self, x):
         
         deit_output = self.transformer(x, output_hidden_states=True)
         all_hidden = deit_output.hidden_states
 
-        hidden1 = all_hidden[3].permute(0, 2, 1)
-        hidden2 = all_hidden[6].permute(0, 2, 1)
-        hidden3 = all_hidden[9].permute(0, 2, 1)
-        hidden4 = all_hidden[12].permute(0, 2, 1)
+        to_add = self.gems[0](all_hidden[0].permute(0, 2, 1))
+        for i in range(1, 13):
+            to_add = to_add * 0.5 + self.gems[i](all_hidden[i].permute(0, 2, 1))
 
-        pooled1 = self.gem1(hidden1)
-        pooled2 = self.gem2(hidden2)
-        pooled3 = self.gem3(hidden3)
-        pooled4 = self.gem4(hidden4)
-
-        pooled = self.a1 * pooled1 + self.a2 * pooled2 + self.a3 * pooled3 + self.a4 * pooled4
+        pooled = to_add
         pooled_size = torch.linalg.vector_norm(pooled, ord=2, dim=-1, keepdim=True) + 1e-7
         return pooled / pooled_size

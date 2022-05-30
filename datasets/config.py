@@ -37,7 +37,7 @@ class GeMConfig():
             self.model_settings_path = 'modules/mvit/MVIT_B_16_CONV.yaml'
             self.model_pretrained_path = 'mvit_para/IN1K_MVIT_B_16_CONV.pyth'
             self.hidden_size = 768
-            self.hidden_list = [384, 384, 384, 768]
+            self.hidden_list = [96, 192, 192, 384, 384, 384, 384, 384, 384, 384, 384, 384, 384, 384, 768, 768, 768]
 
 class SwinConfig:
     def __init__(self):
