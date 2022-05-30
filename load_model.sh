@@ -6,5 +6,6 @@ mkdir swin_para
 # move three files into swin_para
 
 # download parameter files for ImageNet from website https://github.com/facebookresearch/SlowFast/blob/main/MODEL_ZOO.md
+# check this website to get the right version of MViT https://github.com/facebookresearch/SlowFast/pull/516/commits/02a85e9970c9585f3aa4ef9c8e6521eafc871f90
 mkdir mvit_para
 # move file into mvit_para
