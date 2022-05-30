@@ -106,7 +106,7 @@ class GeM(nn.Module):
         self.minimumx = nn.Parameter(torch.Tensor([1e-6]), requires_grad=False)
         self.sa = SpatialAttention()
         self.fc1 = nn.Linear(self.hidden_size, cfg.class_num)
-	self.mp = mixedPool()
+        self.mp = mixedPool()
         self.slp = SoftPool2d()
     # def gem(self, x):
     #     xsize = torch.linalg.vector_norm(x, ord=2, dim=-1, keepdim=False) + 1e-7
@@ -190,7 +190,7 @@ class GeM(nn.Module):
             fsize = torch.linalg.vector_norm(final_representation, ord=2, dim=-1, keepdim=True) + 1e-7
             return final_representation / fsize
 
-	if len(scale_list) < 1 and encoder == 'mixpool':
+        if len(scale_list) < 1 and encoder == 'mixpool':
             r1 = self.backbone(data)
             mix_w = self.mp(r1)
             final_representation = torch.sum((r1 * mix_w).reshape(batch_size, r1.size(1), -1), dim=-1)
@@ -247,7 +247,7 @@ class GeM(nn.Module):
             sscore = self.fc1(r1)
             return sscore
 
-	if encoder == 'mixpool':
+        if encoder == 'mixpool':
             mix_w = self.mp(r1)
             final_representation = torch.sum((r1 * mix_w).reshape(batch_size, r1.size(1), -1), dim=-1)
             sscore = self.fc1(final_representation)
