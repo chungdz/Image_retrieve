@@ -52,7 +52,7 @@ class SpatialAttention(nn.Module):
         return att
 
 class mixedPool(nn.Module):
-    def __init__(self,kernel_size, stride, padding=0, alpha=0.5):
+    def __init__(self, kernel_size, stride, padding=0, alpha=0.5):
         # nn.Module.__init__(self)
         super(mixedPool, self).__init__()
         alpha = torch.FloatTensor([alpha])
@@ -68,14 +68,14 @@ class mixedPool(nn.Module):
 
 class SoftPool2d(nn.Module):
     def __init__(self, kernel_size=3, stride=1, padding=1):
-        super(SoftPool2d,self).__init__()
+        super(SoftPool2d, self).__init__()
         self.kernel_size = kernel_size
         self.stride = stride
         self.padding = padding
 
     def forward(self, x):
         print(x.size())
-        x = self.soft_pool2d(x, kernel_size=self.kernel_size, stride=self.stride,padding=self.padding)
+        x = self.soft_pool2d(x, kernel_size=self.kernel_size, stride=self.stride, padding=self.padding)
         return x
 
     def soft_pool2d(self, x, kernel_size=2, stride=None, padding=0,force_inplace=False):
