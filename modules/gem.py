@@ -66,6 +66,29 @@ class mixedPool(nn.Module):
                     1 - self.alpha) * F.avg_pool2d(x, self.kernel_size, self.stride, self.padding)
         return x
 
+class SoftPool2d(nn.Module):
+    def __init__(self, kernel_size=3, stride=1, padding=1):
+        super(SoftPool2d,self).__init__()
+        self.kernel_size = kernel_size
+        self.stride = stride
+        self.padding = padding
+
+    def forward(self, x):
+        print(x.size())
+        x = self.soft_pool2d(x, kernel_size=self.kernel_size, stride=self.stride,padding=self.padding)
+        return x
+
+    def soft_pool2d(self, x, kernel_size=2, stride=None, padding=0,force_inplace=False):
+        kernel_size = _pair(kernel_size)
+        if stride is None:
+            stride = kernel_size
+        else:
+            stride = _pair(stride)
+        _, c, h, w = x.size()
+        e_x = torch.sum(torch.exp(x),dim=1,keepdim=True)
+        return F.avg_pool2d(x.mul(e_x), kernel_size, stride=stride, padding=padding).mul_(sum(kernel_size)).div_(F.avg_pool2d(e_x, kernel_size, stride=stride, padding=padding).mul_(sum(kernel_size)))
+
+
 class GeM(nn.Module):
 
     def __init__(self, cfg):
@@ -83,7 +106,8 @@ class GeM(nn.Module):
         self.minimumx = nn.Parameter(torch.Tensor([1e-6]), requires_grad=False)
         self.sa = SpatialAttention()
         self.fc1 = nn.Linear(self.hidden_size, cfg.class_num)
-	self.mp = mixedPool()    
+	self.mp = mixedPool()
+        self.slp = SoftPool2d()
     # def gem(self, x):
     #     xsize = torch.linalg.vector_norm(x, ord=2, dim=-1, keepdim=False) + 1e-7
     #     xpower = torch.sum(torch.pow(x, self.p), dim=-1, keepdim=False)
@@ -172,6 +196,15 @@ class GeM(nn.Module):
             final_representation = torch.sum((r1 * mix_w).reshape(batch_size, r1.size(1), -1), dim=-1)
             msize = torch.linalg.vector_norm(final_representation, ord=2, dim=-1, keepdim=True) + 1e-7
             return final_representation / msize
+
+        if len(scale_list) < 1 and encoder == 'softpool':
+            r1 = self.backbone(data)
+            lip_w = self.slp(r1)
+            #print(lip_w.size())
+            #print(r1.size())
+            final_representation = torch.sum((r1 * lip_w).reshape(batch_size, r1.size(1), -1), dim=-1)
+            msize = torch.linalg.vector_norm(final_representation, ord=2, dim=-1, keepdim=True) + 1e-7
+            return final_representation / msize
         
         all_v = []
         for scale in scale_list:
@@ -220,6 +253,12 @@ class GeM(nn.Module):
             sscore = self.fc1(final_representation)
             return sscore
 
+        if encoder == 'softpool':
+            lip_w = self.slp(r1)
+            print(lip_w.size())
+            final_representation = torch.sum((r1 * lip_w).reshape(batch_size, r1.size(1), -1), dim=-1)
+            sscore = self.fc1(final_representation)
+            return sscore
 
     
 
