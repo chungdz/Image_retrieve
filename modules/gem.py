@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from .gswin import SwinFM, SwinFMS
+from .gswin import SwinFM, SwinFMS, SwinFMGL
 from .gresnet import ResNetRaw, ResNetRawS
 from .gdeit import DeiTRaw, DeiTGeM, DeiTMultiGeM
 from .gmvit import MViTRaw, MViTGeM, MViTMulti
@@ -33,6 +33,9 @@ class GeM(nn.Module):
             else:
                 print('load single stage GeM Swin Transformer')
                 self.backbone = SwinFMS()
+        elif 'swingl' == cfg.arch:
+            print('load single stage GeM Swin Transformer with local')
+            self.backbone = SwinFMGL()
         elif 'mvit' == cfg.arch:
             print('load MViT CLS')
             self.backbone = MViTRaw(cfg)

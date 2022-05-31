@@ -31,6 +31,10 @@ class GeMConfig():
             self.hidden_size = 2048
         elif arch == 'swin':
             self.hidden_size = 1536
+        elif arch == 'swingl':
+            self.hidden_size = 1536 + 245
+            self.dhidden = 245
+            self.ghidden = 1536
         elif 'deit' in arch:
             self.hidden_size = 768
         elif 'mvit' in arch:
@@ -61,6 +65,8 @@ class SwinConfig:
         self.channels = [384, 768, 1536, 1536]
         self.resolution = [28, 14, 7, 7]
         self.hidden = 1536
+        self.dc = 5
+        self.dkernel = [4, 2, 1, 1]
 
 
 
