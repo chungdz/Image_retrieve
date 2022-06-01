@@ -20,6 +20,7 @@ class GeMConfig():
         self.md = json.load(open(os.path.join(dpath, 'model_num.json'), 'r'))
         self.class_num = len(self.md)
         self.isM = True
+        self.dpath = dpath
 
     def set_arch(self, arch):
         self.arch = arch
@@ -39,8 +40,8 @@ class GeMConfig():
         elif 'deit' in arch:
             self.hidden_size = 768
         elif 'mvit' in arch:
-            self.model_settings_path = 'modules/mvit/MVIT_B_16_CONV.yaml'
-            self.model_pretrained_path = 'mvit_para/IN1K_MVIT_B_16_CONV.pyth'
+            self.model_settings_path = os.path.join(self.dpath, 'modules/mvit/MVIT_B_16_CONV.yaml')
+            self.model_pretrained_path = os.path.join(self.dpath, 'mvit_para/IN1K_MVIT_B_16_CONV.pyth')
             self.hidden_size = 768
             self.hidden_list = [96, 192, 192, 384, 384, 384, 384, 384, 384, 384, 384, 384, 384, 384, 768, 768, 768]
 
