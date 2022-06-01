@@ -12,15 +12,20 @@ class SpatialAttention(nn.Module):
         super(SpatialAttention, self).__init__()
         self.conv = nn.Conv2d(2, 1, 3, padding='same')
         self.proj = nn.Linear(insize, outsize)
+        self.tanh = nn.Tanh()
     
     def forward(self, feature_maps):
         # input batch_size, channel, w, h
         meanp = feature_maps.mean(dim=1, keepdim=True)
         maxp, _ = feature_maps.max(dim=1, keepdim=True)
         cp = torch.cat([meanp, maxp], dim=1)
-        att = torch.sigmoid(self.conv(cp))
+
+        att = self.conv(cp).reshape(feature_maps.size(0), -1)
+        att = torch.softmax(att, dim=-1)
+        att = att.reshape(feature_maps.size(0), 1, feature_maps.size(2), feature_maps.size(3))
+
         agg = torch.sum((feature_maps * att).reshape(feature_maps.size(0), feature_maps.size(1), -1), dim=-1)
-        agg = self.proj(agg)
+        agg = self.tanh(self.proj(agg))
         return agg
 
 class MultiStageGeM(nn.Module):
@@ -238,24 +243,28 @@ class SwinFMGL(nn.Module):
         x = self.st.layers[0](x)
         to_add = self.ln1(x).permute(0, 2, 1)
         v1 = self.gem1(to_add)
+        v1 = torch.tanh(v1)
         v1d = self.conv1(to_add.reshape(-1, self.scfg.channels[0], self.scfg.resolution[0], self.scfg.resolution[0]))
         v1 = torch.cat([v1, v1d.flatten(1)], dim=1)
 
         x = self.st.layers[1](x)
         to_add = self.ln2(x).permute(0, 2, 1)
         v2 = self.gem2(to_add)
+        v2 = torch.tanh(v2)
         v2d = self.conv2(to_add.reshape(-1, self.scfg.channels[1], self.scfg.resolution[1], self.scfg.resolution[1]))
         v2 = torch.cat([v2, v2d.flatten(1)], dim=1)
 
         x = self.st.layers[2](x)
         to_add = self.ln3(x).permute(0, 2, 1)
         v3 = self.gem3(to_add)
+        v3 = torch.tanh(v3)
         v3d = self.conv3(to_add.reshape(-1, self.scfg.channels[2], self.scfg.resolution[2], self.scfg.resolution[2]))
         v3 = torch.cat([v3, v3d.flatten(1)], dim=1)
 
         x = self.st.layers[3](x)
         to_add = self.ln4(x).permute(0, 2, 1)
         v4 = self.gem4(to_add)
+        v4 = torch.tanh(v4)
         v4d = self.conv4(to_add.reshape(-1, self.scfg.channels[3], self.scfg.resolution[3], self.scfg.resolution[3]))
         v4 = torch.cat([v4, v4d.flatten(1)], dim=1)
 
