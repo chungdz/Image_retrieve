@@ -55,6 +55,12 @@ class GeM(nn.Module):
         data = data.reshape(batch_size, 3, l, l)
         r = self.backbone(data)
         return r
+    
+    def predict_all(self, data, l):
+        batch_size = data.size(0)
+        data = data.reshape(batch_size, 3, l, l)
+        r = self.backbone.predict_all(data)
+        return r
 
     def mips(self, data, l, db, k=20):
         curq = self.predict(data, l)

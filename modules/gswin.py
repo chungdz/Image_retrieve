@@ -116,6 +116,37 @@ class SwinFM(nn.Module):
         # x = x.reshape(-1, x.size(1), 7, 7)
         # x = self.bn(x)
         return final / gem_size
+    
+    def predict_all(self, x):
+        '''
+        torch.Size([32, 3136, 192])
+        torch.Size([32, 784, 384])
+        torch.Size([32, 196, 768])
+        torch.Size([32, 49, 1536])
+        torch.Size([32, 49, 1536])
+        '''
+        x = self.st.patch_embed(x)
+        if self.st.ape:
+            x = x + self.st.absolute_pos_embed
+        
+        to_return = []
+        x = self.st.pos_drop(x)
+        img = x.permute(0, 2, 1).reshape(x.size(0), x.size(1), 56, 56)
+        to_return.append(img)
+        x = self.st.layers[0](x)
+        img = x.permute(0, 2, 1).reshape(x.size(0), x.size(1), 28, 28)
+        to_return.append(img)
+        x = self.st.layers[1](x)
+        img = x.permute(0, 2, 1).reshape(x.size(0), x.size(1), 14, 14)
+        to_return.append(img)
+        x = self.st.layers[2](x)
+        img = x.permute(0, 2, 1).reshape(x.size(0), x.size(1), 7, 7)
+        to_return.append(img)
+        x = self.st.layers[3](x)
+        img = x.permute(0, 2, 1).reshape(x.size(0), x.size(1), 7, 7)
+        to_return.append(img)
+
+        return to_return
 
 
 class SwinFMS(nn.Module):
@@ -242,7 +273,4 @@ class SwinFMGL(nn.Module):
         # x = x.reshape(-1, x.size(1), 7, 7)
         # x = self.bn(x)
         return final / gem_size
-
-
-    
 
