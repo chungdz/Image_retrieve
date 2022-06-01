@@ -29,13 +29,13 @@ class GeM(nn.Module):
         elif 'swin' == cfg.arch:
             if cfg.isM:
                 print('load multi stage GeM Swin Transformer')
-                self.backbone = SwinFM()
+                self.backbone = SwinFM(cfg.dpath)
             else:
                 print('load single stage GeM Swin Transformer')
-                self.backbone = SwinFMS()
+                self.backbone = SwinFMS(cfg.dpath)
         elif 'swingl' == cfg.arch:
             print('load single stage GeM Swin Transformer with local')
-            self.backbone = SwinFMGL()
+            self.backbone = SwinFMGL(cfg.dpath)
         elif 'mvit' == cfg.arch:
             print('load MViT CLS')
             self.backbone = MViTRaw(cfg)

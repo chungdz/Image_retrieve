@@ -41,9 +41,9 @@ class MultiStageGeM(nn.Module):
 
 class SwinFM(nn.Module):
 
-    def __init__(self):
+    def __init__(self, dpath):
         super(SwinFM, self).__init__()
-        scfg = SwinConfig()
+        scfg = SwinConfig(dpath)
         cfg = get_config(scfg)
         self.st = build_model(cfg)
         load_pretrained(cfg, self.st)
@@ -151,9 +151,9 @@ class SwinFM(nn.Module):
 
 class SwinFMS(nn.Module):
 
-    def __init__(self):
+    def __init__(self, dpath):
         super(SwinFMS, self).__init__()
-        scfg = SwinConfig()
+        scfg = SwinConfig(dpath)
         cfg = get_config(scfg)
         self.st = build_model(cfg)
         load_pretrained(cfg, self.st)
@@ -181,9 +181,9 @@ class SwinFMS(nn.Module):
 
 class SwinFMGL(nn.Module):
 
-    def __init__(self):
+    def __init__(self, dpath):
         super(SwinFMGL, self).__init__()
-        scfg = SwinConfig()
+        scfg = SwinConfig(dpath)
         cfg = get_config(scfg)
         self.st = build_model(cfg)
         load_pretrained(cfg, self.st)
