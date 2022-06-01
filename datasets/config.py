@@ -32,9 +32,10 @@ class GeMConfig():
         elif arch == 'swin':
             self.hidden_size = 1536
         elif arch == 'swingl':
-            self.hidden_size = 1536 + 245
-            self.dhidden = 245
-            self.ghidden = 1536
+            # self.hidden_size = 1536 + 245
+            # self.dhidden = 245
+            # self.ghidden = 1536
+            self.hidden_size = 1536 + 1536
         elif 'deit' in arch:
             self.hidden_size = 768
         elif 'mvit' in arch:

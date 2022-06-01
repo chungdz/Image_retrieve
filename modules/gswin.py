@@ -8,9 +8,10 @@ from datasets.config import SwinConfig
 
 class SpatialAttention(nn.Module):
 
-    def __init__(self):
+    def __init__(self, insize, outsize):
         super(SpatialAttention, self).__init__()
         self.conv = nn.Conv2d(2, 1, 3, padding='same')
+        self.proj = nn.Linear(insize, outsize)
     
     def forward(self, feature_maps):
         # input batch_size, channel, w, h
@@ -18,7 +19,9 @@ class SpatialAttention(nn.Module):
         maxp, _ = feature_maps.max(dim=1, keepdim=True)
         cp = torch.cat([meanp, maxp], dim=1)
         att = torch.sigmoid(self.conv(cp))
-        return att
+        agg = torch.sum((feature_maps * att).reshape(feature_maps.size(0), feature_maps.size(1), -1), dim=-1)
+        agg = self.proj(agg)
+        return agg
 
 class MultiStageGeM(nn.Module):
 
@@ -178,11 +181,16 @@ class SwinFMGL(nn.Module):
         #     nn.Linear(scfg.hidden * 2, 4),
         #     nn.Sigmoid()
         # )
-        self.conv1 = nn.Conv2d(scfg.channels[0], self.scfg.dc, self.scfg.dkernel[0], stride=self.scfg.dkernel[0], padding=0)
-        self.conv2 = nn.Conv2d(scfg.channels[1], self.scfg.dc, self.scfg.dkernel[1], stride=self.scfg.dkernel[1], padding=0)
-        self.conv3 = nn.Conv2d(scfg.channels[2], self.scfg.dc, self.scfg.dkernel[2], stride=self.scfg.dkernel[2], padding=0)
-        self.conv4 = nn.Conv2d(scfg.channels[3], self.scfg.dc, self.scfg.dkernel[3], stride=self.scfg.dkernel[3], padding=0)
-    
+        # self.conv1 = nn.Conv2d(scfg.channels[0], self.scfg.dc, self.scfg.dkernel[0], stride=self.scfg.dkernel[0], padding=0)
+        # self.conv2 = nn.Conv2d(scfg.channels[1], self.scfg.dc, self.scfg.dkernel[1], stride=self.scfg.dkernel[1], padding=0)
+        # self.conv3 = nn.Conv2d(scfg.channels[2], self.scfg.dc, self.scfg.dkernel[2], stride=self.scfg.dkernel[2], padding=0)
+        # self.conv4 = nn.Conv2d(scfg.channels[3], self.scfg.dc, self.scfg.dkernel[3], stride=self.scfg.dkernel[3], padding=0)
+        self.conv1 = SpatialAttention(scfg.channels[0], scfg.hidden)
+        self.conv2 = SpatialAttention(scfg.channels[1], scfg.hidden)
+        self.conv3 = SpatialAttention(scfg.channels[2], scfg.hidden)
+        self.conv4 = SpatialAttention(scfg.channels[3], scfg.hidden)
+
+
     def forward(self, x):
         '''
         torch.Size([32, 3136, 192])
