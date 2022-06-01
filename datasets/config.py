@@ -36,7 +36,7 @@ class GeMConfig():
             # self.hidden_size = 1536 + 245
             # self.dhidden = 245
             # self.ghidden = 1536
-            self.hidden_size = 1536 + 1536
+            self.hidden_size = 1536 + 384
         elif 'deit' in arch:
             self.hidden_size = 768
         elif 'mvit' in arch:

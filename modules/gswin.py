@@ -216,10 +216,10 @@ class SwinFMGL(nn.Module):
         # self.conv2 = nn.Conv2d(scfg.channels[1], self.scfg.dc, self.scfg.dkernel[1], stride=self.scfg.dkernel[1], padding=0)
         # self.conv3 = nn.Conv2d(scfg.channels[2], self.scfg.dc, self.scfg.dkernel[2], stride=self.scfg.dkernel[2], padding=0)
         # self.conv4 = nn.Conv2d(scfg.channels[3], self.scfg.dc, self.scfg.dkernel[3], stride=self.scfg.dkernel[3], padding=0)
-        self.conv1 = SpatialAttention(scfg.channels[0], scfg.hidden)
-        self.conv2 = SpatialAttention(scfg.channels[1], scfg.hidden)
-        self.conv3 = SpatialAttention(scfg.channels[2], scfg.hidden)
-        self.conv4 = SpatialAttention(scfg.channels[3], scfg.hidden)
+        self.conv1 = SpatialAttention(scfg.channels[0], scfg.hidden // 4)
+        self.conv2 = SpatialAttention(scfg.channels[1], scfg.hidden // 4)
+        self.conv3 = SpatialAttention(scfg.channels[2], scfg.hidden // 4)
+        self.conv4 = SpatialAttention(scfg.channels[3], scfg.hidden // 4)
 
 
     def forward(self, x):
