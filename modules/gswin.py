@@ -131,19 +131,19 @@ class SwinFM(nn.Module):
         
         to_return = []
         x = self.st.pos_drop(x)
-        img = x.permute(0, 2, 1).reshape(x.size(0), x.size(1), 56, 56)
+        img = x.permute(0, 2, 1).reshape(x.size(0), 192, 56, 56)
         to_return.append(img)
         x = self.st.layers[0](x)
-        img = x.permute(0, 2, 1).reshape(x.size(0), x.size(1), 28, 28)
+        img = x.permute(0, 2, 1).reshape(x.size(0), 384, 28, 28)
         to_return.append(img)
         x = self.st.layers[1](x)
-        img = x.permute(0, 2, 1).reshape(x.size(0), x.size(1), 14, 14)
+        img = x.permute(0, 2, 1).reshape(x.size(0), 768, 14, 14)
         to_return.append(img)
         x = self.st.layers[2](x)
-        img = x.permute(0, 2, 1).reshape(x.size(0), x.size(1), 7, 7)
+        img = x.permute(0, 2, 1).reshape(x.size(0), 1536, 7, 7)
         to_return.append(img)
         x = self.st.layers[3](x)
-        img = x.permute(0, 2, 1).reshape(x.size(0), x.size(1), 7, 7)
+        img = x.permute(0, 2, 1).reshape(x.size(0), 1536, 7, 7)
         to_return.append(img)
 
         return to_return
